@@ -1,15 +1,174 @@
-﻿  Ball.cpp
+﻿  Arrow.cpp
+c:\users\roberto\source\repos\physicscannon\physicscannon\arrow.cpp(62): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\arrow.cpp(77): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\arrow.cpp(90): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\arrow.cpp(139): warning C4018: '<': signed/unsigned mismatch
+c:\users\roberto\source\repos\physicscannon\physicscannon\arrow.cpp(130): warning C4101: 'y': unreferenced local variable
+c:\users\roberto\source\repos\physicscannon\physicscannon\arrow.cpp(130): warning C4101: 'x': unreferenced local variable
+  Arrow2.cpp
+  Axle.cpp
+c:\users\roberto\source\repos\physicscannon\physicscannon\axle.cpp(65): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\axle.cpp(80): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\axle.cpp(93): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\axle.cpp(148): warning C4018: '<': signed/unsigned mismatch
+c:\users\roberto\source\repos\physicscannon\physicscannon\axle.cpp(136): warning C4101: 'y': unreferenced local variable
+c:\users\roberto\source\repos\physicscannon\physicscannon\axle.cpp(136): warning C4101: 'x': unreferenced local variable
+  Ball.cpp
 c:\users\roberto\source\repos\physicscannon\physicscannon\ball.cpp(134): warning C4305: 'argument': truncation from 'double' to 'float'
 c:\users\roberto\source\repos\physicscannon\physicscannon\ball.cpp(136): warning C4305: 'argument': truncation from 'double' to 'float'
 c:\users\roberto\source\repos\physicscannon\physicscannon\ball.cpp(137): warning C4305: 'argument': truncation from 'double' to 'float'
 c:\users\roberto\source\repos\physicscannon\physicscannon\ball.cpp(139): warning C4305: 'argument': truncation from 'double' to 'float'
 c:\users\roberto\source\repos\physicscannon\physicscannon\ball.cpp(158): warning C4305: 'argument': truncation from 'double' to 'float'
 c:\users\roberto\source\repos\physicscannon\physicscannon\ball.cpp(159): warning C4305: 'argument': truncation from 'double' to 'float'
+  Barrel.cpp
+c:\users\roberto\source\repos\physicscannon\physicscannon\barrel.cpp(65): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\barrel.cpp(80): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\barrel.cpp(92): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\barrel.cpp(148): warning C4018: '<': signed/unsigned mismatch
+c:\users\roberto\source\repos\physicscannon\physicscannon\barrel.cpp(136): warning C4101: 'y': unreferenced local variable
+c:\users\roberto\source\repos\physicscannon\physicscannon\barrel.cpp(136): warning C4101: 'x': unreferenced local variable
+  Cheek.cpp
+c:\users\roberto\source\repos\physicscannon\physicscannon\cheek.cpp(65): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\cheek.cpp(80): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\cheek.cpp(93): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\cheek.cpp(149): warning C4018: '<': signed/unsigned mismatch
+c:\users\roberto\source\repos\physicscannon\physicscannon\cheek.cpp(137): warning C4101: 'y': unreferenced local variable
+c:\users\roberto\source\repos\physicscannon\physicscannon\cheek.cpp(137): warning C4101: 'x': unreferenced local variable
+  FrustrumConne.cpp
+c:\users\roberto\source\repos\physicscannon\physicscannon\frustrumconne.h(23): warning C4091: 'static ': ignored on left of 'FrustumConne::<unnamed-enum-OUTSIDE>' when no variable is declared
+c:\users\roberto\source\repos\physicscannon\physicscannon\frustrumconne.cpp(39): warning C4101: 'dir': unreferenced local variable
+  Ground.cpp
+c:\users\roberto\source\repos\physicscannon\physicscannon\ground.cpp(65): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\ground.cpp(80): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\ground.cpp(93): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\ground.cpp(149): warning C4018: '<': signed/unsigned mismatch
+c:\users\roberto\source\repos\physicscannon\physicscannon\ground.cpp(137): warning C4101: 'y': unreferenced local variable
+c:\users\roberto\source\repos\physicscannon\physicscannon\ground.cpp(137): warning C4101: 'x': unreferenced local variable
+  Hub.cpp
+c:\users\roberto\source\repos\physicscannon\physicscannon\hub.cpp(65): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\hub.cpp(80): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\hub.cpp(93): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\hub.cpp(143): warning C4018: '<': signed/unsigned mismatch
+c:\users\roberto\source\repos\physicscannon\physicscannon\hub.cpp(134): warning C4101: 'y': unreferenced local variable
+c:\users\roberto\source\repos\physicscannon\physicscannon\hub.cpp(134): warning C4101: 'x': unreferenced local variable
+  main.cpp
+c:\users\roberto\source\repos\physicscannon\physicscannon\frustrumconne.h(23): warning C4091: 'static ': ignored on left of 'FrustumConne::<unnamed-enum-OUTSIDE>' when no variable is declared
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(121): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(207): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(208): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(212): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(213): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1020): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1047): warning C4305: '=': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1195): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1227): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1322): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1386): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1421): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1455): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1488): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1523): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1555): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1591): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1591): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1663): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1699): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1699): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1752): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1820): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1856): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1944): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1983): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2027): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2113): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2168): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2249): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2254): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2270): warning C4305: '+=': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2278): warning C4305: '-=': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2288): warning C4305: '+=': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2297): warning C4305: '-=': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2333): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2339): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2401): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  Pedestal.cpp
+c:\users\roberto\source\repos\physicscannon\physicscannon\pedestal.cpp(65): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\pedestal.cpp(80): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\pedestal.cpp(93): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\pedestal.cpp(149): warning C4018: '<': signed/unsigned mismatch
+c:\users\roberto\source\repos\physicscannon\physicscannon\pedestal.cpp(137): warning C4101: 'y': unreferenced local variable
+c:\users\roberto\source\repos\physicscannon\physicscannon\pedestal.cpp(137): warning C4101: 'x': unreferenced local variable
+  Physics.cpp
+c:\users\roberto\source\repos\physicscannon\physicscannon\physics.cpp(65): warning C4390: ';': empty controlled statement found; is this the intent?
+  Rim.cpp
+  Screw.cpp
+c:\users\roberto\source\repos\physicscannon\physicscannon\screw.cpp(65): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\screw.cpp(80): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\screw.cpp(93): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\screw.cpp(143): warning C4018: '<': signed/unsigned mismatch
+c:\users\roberto\source\repos\physicscannon\physicscannon\screw.cpp(134): warning C4101: 'y': unreferenced local variable
+c:\users\roberto\source\repos\physicscannon\physicscannon\screw.cpp(134): warning C4101: 'x': unreferenced local variable
+  SmallObj.cpp
+c:\users\roberto\source\repos\physicscannon\physicscannon\smallobj.cpp(65): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\smallobj.cpp(80): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\smallobj.cpp(93): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\smallobj.cpp(149): warning C4018: '<': signed/unsigned mismatch
+c:\users\roberto\source\repos\physicscannon\physicscannon\smallobj.cpp(137): warning C4101: 'y': unreferenced local variable
+c:\users\roberto\source\repos\physicscannon\physicscannon\smallobj.cpp(137): warning C4101: 'x': unreferenced local variable
+  Spoke.cpp
+c:\users\roberto\source\repos\physicscannon\physicscannon\spoke.cpp(65): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\spoke.cpp(80): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\spoke.cpp(93): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\spoke.cpp(143): warning C4018: '<': signed/unsigned mismatch
+c:\users\roberto\source\repos\physicscannon\physicscannon\spoke.cpp(134): warning C4101: 'y': unreferenced local variable
+c:\users\roberto\source\repos\physicscannon\physicscannon\spoke.cpp(134): warning C4101: 'x': unreferenced local variable
+  Stock.cpp
+c:\users\roberto\source\repos\physicscannon\physicscannon\stock.cpp(65): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\stock.cpp(80): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\stock.cpp(93): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\stock.cpp(149): warning C4018: '<': signed/unsigned mismatch
+c:\users\roberto\source\repos\physicscannon\physicscannon\stock.cpp(137): warning C4101: 'y': unreferenced local variable
+c:\users\roberto\source\repos\physicscannon\physicscannon\stock.cpp(137): warning C4101: 'x': unreferenced local variable
+  Torus.cpp
+  Trunnion.cpp
+c:\users\roberto\source\repos\physicscannon\physicscannon\trunnion.cpp(65): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\trunnion.cpp(80): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\trunnion.cpp(93): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\trunnion.cpp(149): warning C4018: '<': signed/unsigned mismatch
+c:\users\roberto\source\repos\physicscannon\physicscannon\trunnion.cpp(137): warning C4101: 'y': unreferenced local variable
+c:\users\roberto\source\repos\physicscannon\physicscannon\trunnion.cpp(137): warning C4101: 'x': unreferenced local variable
+  Utils.cpp
+  Compiling...
+  UtilsOld.cpp
+  Vase.cpp
+c:\users\roberto\source\repos\physicscannon\physicscannon\vase.cpp(42): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\vase.cpp(214): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\vase.cpp(215): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\vase.cpp(221): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
 soil2-debug.lib(SOIL2.obj) : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:ICF' specification
 LINK : warning LNK4098: defaultlib 'MSVCRTD' conflicts with use of other libs; use /NODEFAULTLIB:library
   Generating code
-  1 of 962 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
+  17 of 962 functions ( 1.8%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    2 functions had inline decision re-evaluated but remain unchanged
+    0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
+Ball.obj : warning LNK4020: a type record in 'c:\users\roberto\source\repos\physicscannon\physicscannon\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+Barrel.obj : warning LNK4020: a type record in 'c:\users\roberto\source\repos\physicscannon\physicscannon\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+Cheek.obj : warning LNK4020: a type record in 'c:\users\roberto\source\repos\physicscannon\physicscannon\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+FrustrumConne.obj : warning LNK4020: a type record in 'c:\users\roberto\source\repos\physicscannon\physicscannon\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+Ground.obj : warning LNK4020: a type record in 'c:\users\roberto\source\repos\physicscannon\physicscannon\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+Hub.obj : warning LNK4020: a type record in 'c:\users\roberto\source\repos\physicscannon\physicscannon\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+main.obj : warning LNK4020: a type record in 'c:\users\roberto\source\repos\physicscannon\physicscannon\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+Pedestal.obj : warning LNK4020: a type record in 'c:\users\roberto\source\repos\physicscannon\physicscannon\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+Physics.obj : warning LNK4020: a type record in 'c:\users\roberto\source\repos\physicscannon\physicscannon\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+Rim.obj : warning LNK4020: a type record in 'c:\users\roberto\source\repos\physicscannon\physicscannon\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+Screw.obj : warning LNK4020: a type record in 'c:\users\roberto\source\repos\physicscannon\physicscannon\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+SmallObj.obj : warning LNK4020: a type record in 'c:\users\roberto\source\repos\physicscannon\physicscannon\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+Spoke.obj : warning LNK4020: a type record in 'c:\users\roberto\source\repos\physicscannon\physicscannon\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+Stock.obj : warning LNK4020: a type record in 'c:\users\roberto\source\repos\physicscannon\physicscannon\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+Torus.obj : warning LNK4020: a type record in 'c:\users\roberto\source\repos\physicscannon\physicscannon\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+Trunnion.obj : warning LNK4020: a type record in 'c:\users\roberto\source\repos\physicscannon\physicscannon\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+Utils.obj : warning LNK4020: a type record in 'c:\users\roberto\source\repos\physicscannon\physicscannon\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+UtilsOld.obj : warning LNK4020: a type record in 'c:\users\roberto\source\repos\physicscannon\physicscannon\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+Vase.obj : warning LNK4020: a type record in 'c:\users\roberto\source\repos\physicscannon\physicscannon\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
   PhysicsCannon.vcxproj -> C:\Users\Roberto\source\repos\PhysicsCannon\Release\PhysicsCannon.exe
