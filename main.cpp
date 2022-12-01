@@ -35,7 +35,7 @@ date:
 #include "Pedestal.h"
 #include "SmallObj.h"
 #include "Torus.h"
-#include "Sphera.h"
+#include "Ball.h"
 #include "FrustrumConne.h"
 using namespace std;
 int prevMouseX = 0, prevMouseY = 0;
@@ -89,7 +89,7 @@ float aspect;
 glm::mat4 pMat, vMat, mMat, mvMat, M;
 glm::mat4  MA, MA1, MA2, screwTx, Lrot;
 glm::mat4 temp;
-float Ax, Ay, Az,scaleV,wR,trunnionR,screwR;
+float Ax, Ay, Az,scaleV,wR,trunnionR,screwR,baseYr,baseZ;
 stack <glm::mat4> mvStack;
 //New light stuff
 GLuint  nLoc;
@@ -126,7 +126,7 @@ Pedestal myPedestal(10, 1, 30, 30, 10, 1, 160, 1);
 SmallObj mySmallObj(10, 1, 30, 30, 10, 1, 160, 1);
 Torus myTorus(0.5f, 0.2f, 48);
 Torus myCube(0.5f, 0.2f, 48);
-Sphera mySphera[100];
+Ball mySphera[20];
 FrustumConne myFrustum();
 //time
 float dt, lastTime,currentTime;
@@ -1044,7 +1044,8 @@ void init(GLFWwindow* window) {
 	MA1 = buildScala(0.2, 0.5, 0.2)*MA1;
 	MA2 = MA2 * rotateY(toRadians(-90));
 	MA2 = buildScala(0.2, 0.2, 0.5)*MA2;*/
-	Ax = Ay = Az = wR = trunnionR = screwR = 0;
+	baseZ = 0.6;
+	baseYr  =Ax = Ay = Az = wR = trunnionR = screwR = 0;
 	screwTx = buildTranslate(0, 0, 0);
 	V = glm::vec4(0,0,0,0);
 	scaleV = 1.0;
@@ -1087,7 +1088,7 @@ void display(GLFWwindow* window, double currentTime, float xTr, float yTr, float
 	nLoc = glGetUniformLocation(renderingProgram, "norm_matrix");//
 
 	//MV
-	vMat *= glm::inverse( azimuth *elevation*scale) * buildTranslate(0, 0, 0);
+	vMat *= buildTranslate(0, 0, 0) * glm::inverse( azimuth *elevation*scale) ;
 	mvStack.push(vMat);
 	mvStack.push(mvStack.top());
 	
@@ -1285,7 +1286,7 @@ void display(GLFWwindow* window, double currentTime, float xTr, float yTr, float
 	//SkyCube
 	glUseProgram(renderingProgramCubeMap);
 	restart = mvStack.top();
-	mvStack.top() *= buildScala(2.0f, 2.0f, 2.0f);// *rotateY(toRadians(90));
+	mvStack.top() *= buildTranslate(0, 0, 0);//* buildScala(2.0f, 2.0f, 2.0f);// *rotateY(toRadians(90));
 	mvStack.push(mvStack.top());
 	mvLoc = glGetUniformLocation(renderingProgram, "mv_matrix");
 	projLoc = glGetUniformLocation(renderingProgram, "proj_matrix");
@@ -1375,7 +1376,7 @@ void display(GLFWwindow* window, double currentTime, float xTr, float yTr, float
 	glUseProgram(renderingProgram);
 	temp = mvStack.top();
 	temp += ((glm::toMat4(xRot)*glm::toMat4(yRot)*glm::toMat4(zRot))*V);
-	mvStack.top() *= buildTranslate(0.6, 0, 0) * temp * ((glm::toMat4(xRot)*glm::toMat4(yRot)*glm::toMat4(zRot))*glm::toMat4(zRot)) * (glm::toMat4(yRot)*(glm::toMat4(xRot)*glm::toMat4(yRot)*glm::toMat4(zRot)));
+	mvStack.top() *= rotateZ(toRadians(baseYr)) *  buildTranslate(baseZ, 0, 0)* temp * ((glm::toMat4(xRot)*glm::toMat4(yRot)*glm::toMat4(zRot))*glm::toMat4(zRot)) * (glm::toMat4(yRot)*(glm::toMat4(xRot)*glm::toMat4(yRot)*glm::toMat4(zRot)));
 	mvStack.push(mvStack.top());
 
 	// Arrows BASE
@@ -1914,12 +1915,20 @@ void display(GLFWwindow* window, double currentTime, float xTr, float yTr, float
 	reStartLight();
 	if (shotFire)
 	{
-		mySphera[spheraN].lunchBall(mvStack, glm::vec3(mvStack.top()[3][0], mvStack.top()[3][1], mvStack.top()[3][2]), dt);
-		mySphera[spheraN].drawSphera(mySphera[spheraN], vboSphere, vao, mvStack, gemTexture, pMat, invTrMat, mvLoc, projLoc, nLoc);
+		mySphera[spheraN].lunchBall(mySphera,spheraN,mvStack, glm::vec3(mvStack.top()[3][0], mvStack.top()[3][1], mvStack.top()[3][2]), dt);
+		cout << "Base --- x,y,z : " << mvStack.top()[3][0] << " , " << mvStack.top()[3][1] << " , " << mvStack.top()[3][2] << endl;
+		mySphera[spheraN].drawBall(mySphera[spheraN], vboSphere, vao, mvStack, gemTexture, pMat, invTrMat, mvLoc, projLoc, nLoc);
 		shotFire = false;
 		spheraN++;
 		cout << "sphera numeber: " << spheraN << endl;
 	}
+		for (int i = 0; i < spheraN; i++)
+		{
+			
+			mySphera[i].lunchBall(mySphera, spheraN, mvStack, mySphera[i].BallPos, dt);
+			mySphera[i].drawBall(mySphera[i], vboSphere, vao, mvStack, gemTexture, pMat, invTrMat, mvLoc, projLoc, nLoc);
+		}
+
 	
 	mvStack.pop();
 	mvStack.pop();
@@ -2273,18 +2282,28 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 	}
 	if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
-		V += glm::vec4(0,0.1,0,0);
+		//V += glm::vec4(0,0.1,0,0);
+		wR += 30;
+		wheelRot = glm::quat(cosf(toRadians(Ay) / 2), sinf(toRadians(wR) / 2), 0, 0);
+		baseZ += 0.03;
+
 
 
 	}
 	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
-		V -= glm::vec4(0, 0.1, 0, 0);
+		//V -= glm::vec4(0, 0.1, 0, 0);
+		wR -= 30;
+		wheelRot = glm::quat(cosf(toRadians(Ay) / 2), sinf(toRadians(wR) / 2), 0, 0);
+		baseZ -= 0.03;
 	}
 	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
-		V -= glm::vec4(0.1, 0, 0, 0);
+		//V -= glm::vec4(0.1, 0, 0, 0);
+		baseYr += 3;
 	}
 	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
-		V += glm::vec4(0.1, 0, 0, 0);
+		//V += glm::vec4(0.1, 0, 0, 0);
+		baseYr -= 3;
+
 	}
 	if (key == GLFW_KEY_L && action == GLFW_PRESS) {
 		V -= glm::vec4(0, 0, 0.1, 0);
@@ -2296,16 +2315,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 
-void window_size_callback(GLFWwindow* win, int newWidth, int newHeight) {
-	aspect = (float)newWidth / (float)newHeight;
-	glViewport(0, 0, newWidth, newHeight);
-	/*pMat = glm::mat4(
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, -1, 0,
-		0, 0, 0, 1
-	);*/
-}
+
 
 
 
@@ -2332,7 +2342,24 @@ void upDatePmat2(stack <glm::mat4>  vMatemp) {
 
 
 }
-
+void window_size_callback(GLFWwindow* win, int newWidth, int newHeight) {
+	aspect = (float)newWidth / (float)newHeight;
+	glViewport(0, 0, newWidth, newHeight);
+	if (V1toV2View)
+	{
+		upDatePmat(mvStack);
+	}
+	else
+	{
+		upDatePmat2(mvStack);
+	}
+	/*pMat = glm::mat4(
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, -1, 0,
+		0, 0, 0, 1
+	);*/
+}
 int main(void) {
 
 	height = 1080;

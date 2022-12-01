@@ -137,7 +137,7 @@
     <ClCompile Include="Physics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sphera.cpp">
+    <ClCompile Include="Ball.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -211,7 +211,7 @@
     <ClInclude Include="Physics.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sphera.h">
+    <ClInclude Include="Ball.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

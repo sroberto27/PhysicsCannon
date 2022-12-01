@@ -156,6 +156,7 @@
     <ClCompile Include="Arrow.cpp" />
     <ClCompile Include="Arrow2.cpp" />
     <ClCompile Include="Axle.cpp" />
+    <ClCompile Include="Ball.cpp" />
     <ClCompile Include="Barrel.cpp" />
     <ClCompile Include="Cheek.cpp" />
     <ClCompile Include="FrustrumConne.cpp" />
@@ -167,7 +168,6 @@
     <ClCompile Include="Rim.cpp" />
     <ClCompile Include="Screw.cpp" />
     <ClCompile Include="SmallObj.cpp" />
-    <ClCompile Include="Sphera.cpp" />
     <ClCompile Include="Spoke.cpp" />
     <ClCompile Include="Stock.cpp" />
     <ClCompile Include="Torus.cpp" />
@@ -180,6 +180,7 @@
     <ClInclude Include="Arrow.h" />
     <ClInclude Include="Arrow2.h" />
     <ClInclude Include="Axle.h" />
+    <ClInclude Include="Ball.h" />
     <ClInclude Include="Barrel.h" />
     <ClInclude Include="Cheek.h" />
     <ClInclude Include="Flat.h" />
@@ -193,7 +194,6 @@
     <ClInclude Include="Rim.h" />
     <ClInclude Include="Screw.h" />
     <ClInclude Include="SmallObj.h" />
-    <ClInclude Include="Sphera.h" />
     <ClInclude Include="Spoke.h" />
     <ClInclude Include="Stock.h" />
     <ClInclude Include="Torus.h" />

@@ -10,9 +10,11 @@
 #include <cmath>
 #include <vector>
 #include <random>
+#include "Ball.h"
 class Physics {
 public:
 	Physics(float massa, glm::vec3 position, glm::vec3 Velocita, glm::vec3 accelar);
+	glm::vec3 gravitationalForce = glm::vec3(0, 9.80665f, 0);
 	float mass;
 	glm::vec3 pos;
 	glm::vec3 velocity;
@@ -25,5 +27,8 @@ public:
 	void impulse(glm::vec3 force, float deltaTime);
 	void impulse(glm::vec3 dir, float magnitud, float deltaTime);
 	void TransEnergy(float julios);
+	void collisionFloor(glm::vec3 ballPos, float dt, glm::vec3 velo, float yF);
+	glm::vec3 collisionFloorReaction(glm::vec3 ballVelo, float coeficiente);
+	void collisionBallsClones(Ball sPhArray[20], int sphNum);
 
 };

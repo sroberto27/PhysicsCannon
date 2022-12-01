@@ -12,32 +12,32 @@
 #include <fstream>
 #include <glm\gtc\type_ptr.hpp> // glm::value_ptr
 #include <glm\gtc\matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
-#include "Sphera.h"
+#include "Ball.h"
 #include "Physics.h"
 using namespace std;
-glm::vec3 BallPos,BallV;
-float x, y, z;
+
+
 
 Physics myFisica(1.0f, glm::vec3(1.05, 0, 0), glm::vec3(0, 0, 0), glm::vec3(0, 0, 0));
-Sphera::Sphera() {
+Ball::Ball() {
 	init(48);
 }
 
-Sphera::Sphera(int prec) {
+Ball::Ball(int prec) {
 	init(prec);
 }
 
-float Sphera::toRadians(float degrees) { return (degrees * 2.0f * 3.14159f) / 360.0f; }
+float Ball::toRadians(float degrees) { return (degrees * 2.0f * 3.14159f) / 360.0f; }
 
 
 
-void Sphera::init(int prec) {
-	
+void Ball::init(int prec) {
+
 	y = 1.05f;
 	x = z = 0.0f;
 	BallPos = glm::vec3(x, y, z);
 	BallV = glm::vec3(0, 0, 0);
-	myFisica.accelera(glm::vec3(0,1,0),-9.8f);// applay gravity
+	myFisica.accelera(glm::vec3(0, 0, 1), -9.8f);// applay gravity
 	numVertices = (prec + 1) * (prec + 1);
 	numIndices = prec * prec * 6;
 	for (int i = 0; i < numVertices; i++) { vertices.push_back(glm::vec3()); }
@@ -126,24 +126,47 @@ glm::mat4 buildScala2(float x, float y, float z) {
 glm::vec3 unitVector(glm::vec3 v) {
 	return glm::normalize(v);
 }
-void Sphera::lunchBall(stack <glm::mat4>(&mvStack), glm::vec3 cannonDir, float dt) {
+void Ball::lunchBall(Ball (&sPhArray)[20], int sphNum,stack <glm::mat4>(&mvStack), glm::vec3 cannonDir, float dt) {
 	//Sphera
 //mvStack.push(mvStack.top
 //glUseProgram(renderingProgram);
 //restart = mvStack.top();
-	mvStack.top() *= buildTranslate2(BallPos.x, BallPos.y,BallPos.z)*buildScala2(0.1, 0.2, 0.2);
-	myFisica.accelera(glm::vec3(0, 0, 1), 0.1f);
-	myFisica.impulse(unitVector(cannonDir),0.5, dt);
-	myFisica.updatePhysics(dt,BallPos,BallV);
+	mvStack.top() *= buildTranslate2(BallPos.x, BallPos.y, BallPos.z)*buildScala2(0.1, 0.2, 0.2);
+	//myFisica.accelera(glm::vec3(0, 0, 1), 0.98f);
+	myFisica.accelera(glm::vec3(0, 0, 1), 0.98);
+	myFisica.impulse(unitVector(cannonDir), 0.0005, dt);
+	myFisica.updatePhysics(dt, BallPos, BallV);
+	myFisica.collisionFloor(BallPos, dt, BallV, -0.003);
+	//myFisica.collisionBallsClones(sPhArray, sphNum);
 	cout << "x,y,z : " << BallPos.x << " , " << BallPos.y << " , " << BallPos.z << endl;
-	cout << " velozidad : " <<  BallV.length()<< endl;
+	cout << " velozidad x,y,z : " << BallV.x << " , " << BallV.y << " , " << BallV.z << endl;
+	cout << " velozidad sph: " << BallV.length() << endl;
+	cout << " velozidad physics: " << myFisica.velocity.length() << endl;
+	cout << " accceleration x,y,z : " << BallV.x << " , " << BallV.y << " , " << BallV.z << endl;
 	cout << " accceleration : " << myFisica.acceleration.length() << endl;
 	cout << "paseed by physic" << endl;
 	//mvStack.top() *= startPos * scaleBall;
-	
+
 
 }
-void Sphera::drawSphera(Sphera &mySphera, GLuint(&vboSphere)[4], GLuint(&Vao)[1], stack <glm::mat4>(&mvStack), GLuint gemTexture, glm::mat4 &pMat, glm::mat4 &invTrMat, GLuint &mvLoc, GLuint &projLoc, GLuint &nLoc) {
+void Ball::lunchBall2(glm::vec3 cannonDir, float dt) {
+	//Sphera
+//mvStack.push(mvStack.top
+//glUseProgram(renderingProgram);
+//restart = mvStack.top();
+	//myFisica.force(glm::vec3(0, 0, 1), -9.8);
+	myFisica.accelera(glm::vec3(0, 0, 1), 0.98);
+	myFisica.impulse(unitVector(cannonDir), 0.0005, dt);
+	myFisica.updatePhysics(dt, BallPos, BallV);
+	cout << "x,y,z : " << BallPos.x << " , " << BallPos.y << " , " << BallPos.z << endl;
+	cout << " velozidad : " << BallV.length() << endl;
+	cout << " accceleration : " << myFisica.acceleration.length() << endl;
+	cout << "paseed by physic" << endl;
+	//mvStack.top() *= startPos * scaleBall;
+
+
+}
+void Ball::drawBall(Ball &mySphera, GLuint(&vboSphere)[4], GLuint(&Vao)[1], stack <glm::mat4>(&mvStack), GLuint gemTexture, glm::mat4 &pMat, glm::mat4 &invTrMat, GLuint &mvLoc, GLuint &projLoc, GLuint &nLoc) {
 	mvStack.push(mvStack.top());
 	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
@@ -170,10 +193,10 @@ void Sphera::drawSphera(Sphera &mySphera, GLuint(&vboSphere)[4], GLuint(&Vao)[1]
 	mvStack.pop();
 }
 
-int Sphera::getNumVertices() { return numVertices; }
-int Sphera::getNumIndices() { return numIndices; }
-std::vector<int> Sphera::getIndices() { return indices; }
-std::vector<glm::vec3> Sphera::getVertices() { return vertices; }
-std::vector<glm::vec2> Sphera::getTexCoords() { return texCoords; }
-std::vector<glm::vec3> Sphera::getNormals() { return normals; }
-std::vector<glm::vec3> Sphera::getTangents() { return tangents; }
+int Ball::getNumVertices() { return numVertices; }
+int Ball::getNumIndices() { return numIndices; }
+std::vector<int> Ball::getIndices() { return indices; }
+std::vector<glm::vec3> Ball::getVertices() { return vertices; }
+std::vector<glm::vec2> Ball::getTexCoords() { return texCoords; }
+std::vector<glm::vec3> Ball::getNormals() { return normals; }
+std::vector<glm::vec3> Ball::getTangents() { return tangents; }

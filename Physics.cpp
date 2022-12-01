@@ -13,7 +13,7 @@
 #include "Physics.h"
 using namespace std;
 
-glm::vec3 gravitationalForce = glm::vec3(0,9.80665f,0);
+
 Physics::Physics(float m, glm::vec3 p , glm::vec3 v, glm::vec3 a) {
 	mass = m;
 	pos = p;
@@ -42,4 +42,41 @@ void Physics::TransEnergy(float j){
 	velocity += j > 0 ? deltaVelocity : -deltaVelocity;// if + add dv if not add -dv
 
 }
+void Physics::collisionFloor(glm::vec3 ballPos, float dt, glm::vec3 velo, float yF){
+	if (ballPos.y<yF)
+	{
+		cout << "GROUND hit HERE!!!!!!!" << endl;
+		
+		glm::vec3 tempV = collisionFloorReaction(velo, 0.5f);
+		updatePhysics(dt, ballPos, tempV);
+	}
+}
+glm::vec3 Physics::collisionFloorReaction(glm::vec3 ballVelo, float coeficiente){
+	return -1 * coeficiente*ballVelo;
+}
+void Physics::collisionBallsClones(Ball sPhArray[20],int sphNum) {
+	float c = 0.3f;
+	for (int i = 0; i < sphNum; i++)
+	{
+		for (int j = 0; j < sphNum; i++)
+		{
+			if (i!=j)
+			{
+				if ((glm::length((sPhArray[i].BallPos - sPhArray[j].BallPos))) < (2.0f * (48.0f*0.2f)));//*0.2));
+				{
+					glm::vec3 n = glm::normalize(sPhArray[i].BallPos - sPhArray[j].BallPos);
+					if (glm::dot((sPhArray[i].BallV - sPhArray[j].BallV),n)<0)
+					{
+						glm::vec3 vN = glm::normalize(glm::dot((sPhArray[i].BallV - sPhArray[j].BallV),n)*n);
+						sPhArray[i].BallV = sPhArray[i].BallV - ((1+c) / 2)*vN;
+						sPhArray[j].BallV = sPhArray[j].BallV - ((1 + c) / 2)*vN;
+					}
+				}
+			}
+		}
+	}
+}
+
+
+
 

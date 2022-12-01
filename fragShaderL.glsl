@@ -47,7 +47,7 @@ void main(void)
 	// compute ADS contributions (per pixel):
 	vec3 ambient = (((globalAmbient * material.ambient) + (light.ambient * material.ambient)).xyz);
 	//vec3 ambient = globalAmbient*texture(s,tc)*(0.5*+0.5*N*U)+light.ambient*texture(s,tc);//did not work why? check U
-	vec3 diffuse = light.diffuse.xyz * material.diffuse.xyz * max(cosTheta,0.0);
+	vec3 diffuse = light.diffuse.xyz * material.diffuse.xyz * max(cosTheta,0.0)*0.65;
 	vec3 specular = light.specular.xyz * material.specular.xyz * pow(max(cosPhi,0.0), material.shininess);
 	
 	fragColor = vec4((ambient + diffuse + specular), 1.0)*0.2+texture(s,tc)*0.5;
