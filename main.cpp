@@ -3510,8 +3510,8 @@ void window_size_callback(GLFWwindow* win, int newWidth, int newHeight) {
 }
 int main(void) {
 
-	height = 1080;
-	width = 1920;
+	height = 2160;
+	width = 3840;
 	/* pMat = glm::mat4(
 		((2* -0.2)/(0.8+0.8)), 0, 0, 0,
 		0, ((2 * -0.2) / (0.7 + 0.7)), 0, 0,
@@ -3531,7 +3531,7 @@ int main(void) {
 	if (!glfwInit()) { exit(EXIT_FAILURE); }
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	GLFWwindow* window = glfwCreateWindow(width, height, "You have to make the rules, not follow them.", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(width, height, "Gravity explains the motions of the planets, but it cannot explain who sets the planets in motion.", glfwGetPrimaryMonitor(), NULL);
 	glfwMakeContextCurrent(window);
 	if (glewInit() != GLEW_OK) { exit(EXIT_FAILURE); }
 	glfwSwapInterval(1);
