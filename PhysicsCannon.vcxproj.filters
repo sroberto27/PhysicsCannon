@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
@@ -13,6 +9,50 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4e30d23a-02b0-4e1d-9020-66be4155399f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitattributes">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include=".gitignore">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="fragShader.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="fragShaderExp.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="fragShaderL.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="fragShaderOld.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Hub.txt.cfg">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="README.md">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Stock.txt.cfg">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="vertShader.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="vertShaderExp.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="vertShaderL.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="vertShaderOld.glsl">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="alien.jpg">
@@ -54,24 +94,6 @@
     <Image Include="woodNail.jpg">
       <Filter>Source Files</Filter>
     </Image>
-    <Image Include="xn.jpg">
-      <Filter>Source Files</Filter>
-    </Image>
-    <Image Include="xp.jpg">
-      <Filter>Source Files</Filter>
-    </Image>
-    <Image Include="yn.jpg">
-      <Filter>Source Files</Filter>
-    </Image>
-    <Image Include="yp.jpg">
-      <Filter>Source Files</Filter>
-    </Image>
-    <Image Include="zn.jpg">
-      <Filter>Source Files</Filter>
-    </Image>
-    <Image Include="zp.jpg">
-      <Filter>Source Files</Filter>
-    </Image>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Arrow.cpp">
@@ -81,6 +103,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Axle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Ball.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Barrel.cpp">
@@ -102,6 +127,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Pedestal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Rim.cpp">
@@ -134,10 +162,31 @@
     <ClCompile Include="Vase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Physics.cpp">
+    <ClCompile Include="LuncherBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Ball.cpp">
+    <ClCompile Include="MidBooster.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PropelCap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WindBooster.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WindMidBooster.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Capsule.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Booster.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Box.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -149,6 +198,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Axle.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Ball.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Barrel.h">
@@ -173,6 +225,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Pedestal.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Plane.h">
@@ -208,10 +263,31 @@
     <ClInclude Include="Vase.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Physics.h">
+    <ClInclude Include="Capsule.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Ball.h">
+    <ClInclude Include="PropelCap.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WindMidBooster.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WindBooster.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MidBooster.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LuncherBase.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Booster.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Box.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleGenerator.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -237,6 +313,9 @@
     <Text Include="Hub.txt">
       <Filter>Source Files</Filter>
     </Text>
+    <Text Include="PA5.txt">
+      <Filter>Source Files</Filter>
+    </Text>
     <Text Include="Pedestal.txt">
       <Filter>Source Files</Filter>
     </Text>
@@ -252,6 +331,9 @@
     <Text Include="SmallObjOld.txt">
       <Filter>Source Files</Filter>
     </Text>
+    <Text Include="Sphera.txt">
+      <Filter>Source Files</Filter>
+    </Text>
     <Text Include="Spoke.txt">
       <Filter>Source Files</Filter>
     </Text>
@@ -264,37 +346,26 @@
     <Text Include="Trunnion.txt">
       <Filter>Source Files</Filter>
     </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="fragShader.glsl">
+    <Text Include="Capsule.txt">
       <Filter>Source Files</Filter>
-    </None>
-    <None Include="fragShaderExp.glsl">
+    </Text>
+    <Text Include="PropelCap.txt">
       <Filter>Source Files</Filter>
-    </None>
-    <None Include="fragShaderL.glsl">
+    </Text>
+    <Text Include="WindMidBooster.txt">
       <Filter>Source Files</Filter>
-    </None>
-    <None Include="fragShaderOld.glsl">
+    </Text>
+    <Text Include="WindBooster.txt">
       <Filter>Source Files</Filter>
-    </None>
-    <None Include="Hub.txt.cfg">
+    </Text>
+    <Text Include="MidBooster.txt">
       <Filter>Source Files</Filter>
-    </None>
-    <None Include="Stock.txt.cfg">
+    </Text>
+    <Text Include="Booster.txt">
       <Filter>Source Files</Filter>
-    </None>
-    <None Include="vertShader.glsl">
+    </Text>
+    <Text Include="LuncherBase.txt">
       <Filter>Source Files</Filter>
-    </None>
-    <None Include="vertShaderExp.glsl">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="vertShaderL.glsl">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="vertShaderOld.glsl">
-      <Filter>Source Files</Filter>
-    </None>
+    </Text>
   </ItemGroup>
 </Project>

@@ -18,6 +18,131 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitattributes" />
+    <None Include=".gitignore" />
+    <None Include="fragShader.glsl" />
+    <None Include="fragShaderExp.glsl" />
+    <None Include="fragShaderL.glsl" />
+    <None Include="fragShaderOld.glsl" />
+    <None Include="Hub.txt.cfg" />
+    <None Include="README.md" />
+    <None Include="Stock.txt.cfg" />
+    <None Include="vertShader.glsl" />
+    <None Include="vertShaderExp.glsl" />
+    <None Include="vertShaderL.glsl" />
+    <None Include="vertShaderOld.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="alien.jpg" />
+    <Image Include="brick1.jpg" />
+    <Image Include="brick2.jpg" />
+    <Image Include="brick3.jpg" />
+    <Image Include="brick4.jpg" />
+    <Image Include="Gem.jpg" />
+    <Image Include="innerArrow.jpg" />
+    <Image Include="innerArrow2.jpg" />
+    <Image Include="innerArrow3.jpg" />
+    <Image Include="metal.jpg" />
+    <Image Include="stormCloudSkyBox.jpg" />
+    <Image Include="wood.jpg" />
+    <Image Include="woodNail.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Arrow.cpp" />
+    <ClCompile Include="Arrow2.cpp" />
+    <ClCompile Include="Axle.cpp" />
+    <ClCompile Include="Ball.cpp" />
+    <ClCompile Include="Barrel.cpp" />
+    <ClCompile Include="Booster.cpp" />
+    <ClCompile Include="Box.cpp" />
+    <ClCompile Include="Capsule.cpp" />
+    <ClCompile Include="Cheek.cpp" />
+    <ClCompile Include="FrustrumConne.cpp" />
+    <ClCompile Include="Ground.cpp" />
+    <ClCompile Include="Hub.cpp" />
+    <ClCompile Include="LuncherBase.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MidBooster.cpp" />
+    <ClCompile Include="Particle.cpp" />
+    <ClCompile Include="Pedestal.cpp" />
+    <ClCompile Include="Physics.cpp" />
+    <ClCompile Include="PropelCap.cpp" />
+    <ClCompile Include="Rim.cpp" />
+    <ClCompile Include="Screw.cpp" />
+    <ClCompile Include="SmallObj.cpp" />
+    <ClCompile Include="Spoke.cpp" />
+    <ClCompile Include="Stock.cpp" />
+    <ClCompile Include="Torus.cpp" />
+    <ClCompile Include="Trunnion.cpp" />
+    <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="UtilsOld.cpp" />
+    <ClCompile Include="Vase.cpp" />
+    <ClCompile Include="WindBooster.cpp" />
+    <ClCompile Include="WindMidBooster.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Arrow.h" />
+    <ClInclude Include="Arrow2.h" />
+    <ClInclude Include="Axle.h" />
+    <ClInclude Include="Ball.h" />
+    <ClInclude Include="Barrel.h" />
+    <ClInclude Include="Booster.h" />
+    <ClInclude Include="Box.h" />
+    <ClInclude Include="Capsule.h" />
+    <ClInclude Include="Cheek.h" />
+    <ClInclude Include="Flat.h" />
+    <ClInclude Include="FrustrumConne.h" />
+    <ClInclude Include="Ground.h" />
+    <ClInclude Include="Hub.h" />
+    <ClInclude Include="LuncherBase.h" />
+    <ClInclude Include="main.h" />
+    <ClInclude Include="MidBooster.h" />
+    <ClInclude Include="ParticleGenerator.h" />
+    <ClInclude Include="Pedestal.h" />
+    <ClInclude Include="Physics.h" />
+    <ClInclude Include="Plane.h" />
+    <ClInclude Include="PropelCap.h" />
+    <ClInclude Include="Rim.h" />
+    <ClInclude Include="Screw.h" />
+    <ClInclude Include="SmallObj.h" />
+    <ClInclude Include="Spoke.h" />
+    <ClInclude Include="Stock.h" />
+    <ClInclude Include="Torus.h" />
+    <ClInclude Include="Trunnion.h" />
+    <ClInclude Include="Utils.h" />
+    <ClInclude Include="UtilsOld.h" />
+    <ClInclude Include="Vase.h" />
+    <ClInclude Include="WindBooster.h" />
+    <ClInclude Include="WindMidBooster.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Arrow.txt" />
+    <Text Include="Axle.txt" />
+    <Text Include="Barrel.txt" />
+    <Text Include="Barrelold.txt" />
+    <Text Include="Booster.txt" />
+    <Text Include="Capsule.txt" />
+    <Text Include="Cheek.txt" />
+    <Text Include="Flat.txt" />
+    <Text Include="Hub.txt" />
+    <Text Include="LuncherBase.txt" />
+    <Text Include="MidBooster.txt" />
+    <Text Include="PA5.txt" />
+    <Text Include="Pedestal.txt" />
+    <Text Include="PropelCap.txt" />
+    <Text Include="Rim.txt" />
+    <Text Include="Screw.txt" />
+    <Text Include="SmallObj.txt" />
+    <Text Include="SmallObjOld.txt" />
+    <Text Include="Sphera.txt" />
+    <Text Include="Spoke.txt" />
+    <Text Include="Stock.txt" />
+    <Text Include="Stockold.txt" />
+    <Text Include="Trunnion.txt" />
+    <Text Include="WindBooster.txt" />
+    <Text Include="WindMidBooster.txt" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{c91cc8ab-7425-4ccd-afcf-463711a3c939}</ProjectGuid>
@@ -131,107 +256,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <Image Include="alien.jpg" />
-    <Image Include="brick1.jpg" />
-    <Image Include="brick2.jpg" />
-    <Image Include="brick3.jpg" />
-    <Image Include="brick4.jpg" />
-    <Image Include="Gem.jpg" />
-    <Image Include="innerArrow.jpg" />
-    <Image Include="innerArrow2.jpg" />
-    <Image Include="innerArrow3.jpg" />
-    <Image Include="metal.jpg" />
-    <Image Include="stormCloudSkyBox.jpg" />
-    <Image Include="wood.jpg" />
-    <Image Include="woodNail.jpg" />
-    <Image Include="xn.jpg" />
-    <Image Include="xp.jpg" />
-    <Image Include="yn.jpg" />
-    <Image Include="yp.jpg" />
-    <Image Include="zn.jpg" />
-    <Image Include="zp.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Arrow.cpp" />
-    <ClCompile Include="Arrow2.cpp" />
-    <ClCompile Include="Axle.cpp" />
-    <ClCompile Include="Ball.cpp" />
-    <ClCompile Include="Barrel.cpp" />
-    <ClCompile Include="Cheek.cpp" />
-    <ClCompile Include="FrustrumConne.cpp" />
-    <ClCompile Include="Ground.cpp" />
-    <ClCompile Include="Hub.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Pedestal.cpp" />
-    <ClCompile Include="Physics.cpp" />
-    <ClCompile Include="Rim.cpp" />
-    <ClCompile Include="Screw.cpp" />
-    <ClCompile Include="SmallObj.cpp" />
-    <ClCompile Include="Spoke.cpp" />
-    <ClCompile Include="Stock.cpp" />
-    <ClCompile Include="Torus.cpp" />
-    <ClCompile Include="Trunnion.cpp" />
-    <ClCompile Include="Utils.cpp" />
-    <ClCompile Include="UtilsOld.cpp" />
-    <ClCompile Include="Vase.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Arrow.h" />
-    <ClInclude Include="Arrow2.h" />
-    <ClInclude Include="Axle.h" />
-    <ClInclude Include="Ball.h" />
-    <ClInclude Include="Barrel.h" />
-    <ClInclude Include="Cheek.h" />
-    <ClInclude Include="Flat.h" />
-    <ClInclude Include="FrustrumConne.h" />
-    <ClInclude Include="Ground.h" />
-    <ClInclude Include="Hub.h" />
-    <ClInclude Include="main.h" />
-    <ClInclude Include="Pedestal.h" />
-    <ClInclude Include="Physics.h" />
-    <ClInclude Include="Plane.h" />
-    <ClInclude Include="Rim.h" />
-    <ClInclude Include="Screw.h" />
-    <ClInclude Include="SmallObj.h" />
-    <ClInclude Include="Spoke.h" />
-    <ClInclude Include="Stock.h" />
-    <ClInclude Include="Torus.h" />
-    <ClInclude Include="Trunnion.h" />
-    <ClInclude Include="Utils.h" />
-    <ClInclude Include="UtilsOld.h" />
-    <ClInclude Include="Vase.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Arrow.txt" />
-    <Text Include="Axle.txt" />
-    <Text Include="Barrel.txt" />
-    <Text Include="Barrelold.txt" />
-    <Text Include="Cheek.txt" />
-    <Text Include="Flat.txt" />
-    <Text Include="Hub.txt" />
-    <Text Include="Pedestal.txt" />
-    <Text Include="Rim.txt" />
-    <Text Include="Screw.txt" />
-    <Text Include="SmallObj.txt" />
-    <Text Include="SmallObjOld.txt" />
-    <Text Include="Spoke.txt" />
-    <Text Include="Stock.txt" />
-    <Text Include="Stockold.txt" />
-    <Text Include="Trunnion.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="fragShader.glsl" />
-    <None Include="fragShaderExp.glsl" />
-    <None Include="fragShaderL.glsl" />
-    <None Include="fragShaderOld.glsl" />
-    <None Include="Hub.txt.cfg" />
-    <None Include="Stock.txt.cfg" />
-    <None Include="vertShader.glsl" />
-    <None Include="vertShaderExp.glsl" />
-    <None Include="vertShaderL.glsl" />
-    <None Include="vertShaderOld.glsl" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

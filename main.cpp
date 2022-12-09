@@ -9,6 +9,13 @@ date:
 
 
 */
+#include "Booster.h"
+#include "Capsule.h"
+#include "LuncherBase.h"
+#include "MidBooster.h"
+#include "PropelCap.h"
+#include "WindBooster.h"
+#include "WindMidBooster.h"
 #include <stack>
 #include <GL\glew.h>
 #include <GLFW\glfw3.h>
@@ -37,6 +44,10 @@ date:
 #include "Torus.h"
 #include "Ball.h"
 #include "FrustrumConne.h"
+#include "ParticleGenerator.h"
+#include "Box.h"
+#include "Physics.h"
+
 using namespace std;
 int prevMouseX = 0, prevMouseY = 0;
 bool mouseHeld = false;
@@ -48,6 +59,13 @@ float AngleIncrement = 1.0f;
 float cameraX, cameraY, cameraZ;
 float torLocX, torLocY, torLocZ;
 GLuint renderingProgram, renderingProgramCubeMap, renderingProgramPump;
+GLuint vboBooster[numVBOs];
+GLuint vboMidBooster[numVBOs];
+GLuint vboCapsule[numVBOs];
+GLuint vboLuncherBase[numVBOs];
+GLuint vboPropelCap[numVBOs];
+GLuint vboWindBooster[numVBOs];
+GLuint vboWindMidBooster[numVBOs];
 GLuint vboBarrel[numVBOs];
 GLuint vboHub[numVBOs];
 GLuint vboSpoke[numVBOs];
@@ -80,6 +98,8 @@ bool V1toV2View = true; //true is for V1 false is for V2
 bool  ViewFalg = true;
 glm::mat4  elevation, azimuth,scale, restart, V2TzScalation;
 //Camara Vars
+bool scene = true;
+glm::vec3 cannonPos;
 float eyeX, eyeY, eyeZ, centerX,centerY,centerZ, upX, upY,upZ;
 // variable for display
 GLuint mvLoc, projLoc, mLoc;
@@ -89,7 +109,7 @@ float aspect;
 glm::mat4 pMat, vMat, mMat, mvMat, M;
 glm::mat4  MA, MA1, MA2, screwTx, Lrot;
 glm::mat4 temp;
-float Ax, Ay, Az,scaleV,wR,trunnionR,screwR,baseYr,baseZ;
+float Ax, Ay, Az,scaleV,wR,trunnionR,screwR,baseYr,baseYr2,baseZ;
 stack <glm::mat4> mvStack;
 //New light stuff
 GLuint  nLoc;
@@ -97,7 +117,7 @@ GLuint globalAmbLoc, ambLoc, diffLoc, specLoc, posLoc, mambLoc, mdiffLoc, mspecL
 glm::mat4 invTrMat, rMat;
 glm::vec3 currentLightPos, transformed;
 float lightPos[3];
-glm::vec3 lightLoc = glm::vec3(5.0f, 2.0f, 0.0f);
+glm::vec3 lightLoc = glm::vec3(50.0f, 20.0f, 0.0f);
 //  light
 float globalAmbient[4] = { 0.7f, 0.7f, 0.7f, 1.0f };
 float lightAmbient[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
@@ -110,7 +130,13 @@ float* matDif = Utils::TransDiffuse();
 float* matSpe = Utils::TransSpecular();
 float matShi = Utils::TransShininess();
 
-
+Booster myBooster(10, 1, 30, 30, 10, 1, 160, 1);
+Capsule myCapsule(10, 1, 30, 30, 10, 1, 160, 1);
+LuncherBase myLuncherBase(10, 1, 30, 30, 10, 1, 160, 1);
+MidBooster myMidBooster(10, 1, 30, 30, 10, 1, 160, 1);
+PropelCap myPropelCap(10, 1, 30, 30, 10, 1, 160, 1);
+WindBooster myWindBooster(10, 1, 30, 30, 10, 1, 160, 1);
+WindMidBooster myWindMidBooster(10, 1, 30, 30, 10, 1, 160, 1);
 Arrow myArrow(10, 1, 30, 30, 10, 1, 160, 1);
 Barrel myBarrel(10, 1, 30, 30, 10, 1, 160, 1);
 Cheek myCheek(10, 1, 30, 30, 10, 1, 160, 1);
@@ -129,12 +155,20 @@ Torus myCube(0.5f, 0.2f, 48);
 Ball mySphera[20];
 FrustumConne myFrustum();
 //time
-float dt, lastTime,currentTime;
+float dt, lastTime,currentTime, accumulator;
 int spheraN = 0;
 
+//Rocekets Vars
+GLuint mainRocketTExt, midRocketTExt,boosterText;
+glm::vec3 posBooster, posMidBooster, posCapsule, posRocket;
+glm::vec3 xCapsule, xBooster, xMidBooster,camPos;
+float rocketAngle,Zview,Yview;
+int curve;
+float curveValue;
+bool wideAngle;
 
 
-
+//Matrix operation
 glm::mat4 buildTranslate(float x, float y, float z) {
 	glm::mat4 r = glm::mat4(
 		1, 0, 0, 0,
@@ -144,7 +178,6 @@ glm::mat4 buildTranslate(float x, float y, float z) {
 	);
 	return r;
 }
-
 glm::mat4 rotateX(float rad) {
 	glm::mat4 r = glm::mat4(
 		1, 0, 0, 0,
@@ -182,9 +215,6 @@ glm::mat4 buildScala(float x, float y, float z) {
 	return r;
 }
 
-
-
-
 //MOUSE hover
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
@@ -212,16 +242,61 @@ void mouse_movement_callback(GLFWwindow* window, double xpos, double ypos) {
 	prevMouseX = xpos;
 	prevMouseY = ypos;
 }
+// method for rocket trajectoria
+
+
+//too shiny
+void installLights(glm::mat4 vMatrix) {
+	transformed = glm::vec3(vMatrix * glm::vec4(currentLightPos, 1.0));
+	lightPos[0] = transformed.x;
+	lightPos[1] = transformed.y;
+	lightPos[2] = transformed.z;
+
+	// get the locations of the light and material fields in the shader
+	globalAmbLoc = glGetUniformLocation(renderingProgram, "globalAmbient");
+	ambLoc = glGetUniformLocation(renderingProgram, "light.ambient");
+	diffLoc = glGetUniformLocation(renderingProgram, "light.diffuse");
+	specLoc = glGetUniformLocation(renderingProgram, "light.specular");
+	posLoc = glGetUniformLocation(renderingProgram, "light.position");
+	mambLoc = glGetUniformLocation(renderingProgram, "material.ambient");
+	mdiffLoc = glGetUniformLocation(renderingProgram, "material.diffuse");
+	mspecLoc = glGetUniformLocation(renderingProgram, "material.specular");
+	mshiLoc = glGetUniformLocation(renderingProgram, "material.shininess");
+
+	//  set the uniform light and material values in the shader
+	glProgramUniform4fv(renderingProgram, globalAmbLoc, 1, globalAmbient);
+	glProgramUniform4fv(renderingProgram, ambLoc, 1, lightAmbient);
+	glProgramUniform4fv(renderingProgram, diffLoc, 1, lightDiffuse);
+	glProgramUniform4fv(renderingProgram, specLoc, 1, lightSpecular);
+	glProgramUniform3fv(renderingProgram, posLoc, 1, lightPos);
+	//glProgramUniform4fv(renderingProgram, mambLoc, 1, matAmb);
+	//glProgramUniform4fv(renderingProgram, mdiffLoc, 1, matDif);
+	//glProgramUniform4fv(renderingProgram, mspecLoc, 1, matSpe);
+	//glProgramUniform1f(renderingProgram, mshiLoc, matShi);
+}
+void reStartLight() {
+
+	glProgramUniform4fv(renderingProgram, mambLoc, 1, matAmb);
+	glProgramUniform4fv(renderingProgram, mdiffLoc, 1, matDif);
+	glProgramUniform4fv(renderingProgram, mspecLoc, 1, matSpe);
+	glProgramUniform1f(renderingProgram, mshiLoc, matShi);
+}
+
+
+
 void setupVertices(void) {
 	std::vector<int> ind;
-	std::vector<glm::vec3> vert ;
-	std::vector<glm::vec2> tex ;
-	std::vector<glm::vec3> norm ;
+	std::vector<glm::vec3> vert;
+	std::vector<glm::vec2> tex;
+	std::vector<glm::vec3> norm;
 
 	std::vector<float> pvalues;
 	std::vector<float> tvalues;
 	std::vector<float> nvalues;
-	
+	//particles1
+
+
+
 
 	//Setup Ground
 
@@ -251,7 +326,7 @@ void setupVertices(void) {
 	glBindBuffer(GL_ARRAY_BUFFER, vboGround[1]);
 	glBufferData(GL_ARRAY_BUFFER, tvalues.size() * 4, &tvalues[0], GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ARRAY_BUFFER, vboPedestal[2]);
+	glBindBuffer(GL_ARRAY_BUFFER, vboGround[2]);
 	glBufferData(GL_ARRAY_BUFFER, nvalues.size() * 4, &nvalues[0], GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboGround[3]);
@@ -261,7 +336,317 @@ void setupVertices(void) {
 	///////////
 
 
+	//Rocket Set up
+	//Boster SetUP
+	ind.clear();
+	vert.clear();
+	tex.clear();
+	norm.clear();
 
+	pvalues.clear();
+	tvalues.clear();
+	nvalues.clear();
+	ind = myBooster.getIndices();
+	vert = myBooster.getVertices();
+	tex = myBooster.getTexCoords();
+	norm = myBooster.getNormals();
+
+	for (int i = 0; i < myBooster.getNumVertices(); i++) {
+		pvalues.push_back(vert[i].x);
+		pvalues.push_back(vert[i].y);
+		pvalues.push_back(vert[i].z);
+		tvalues.push_back(tex[i].s);
+		tvalues.push_back(tex[i].t);
+		nvalues.push_back(norm[i].x);
+		nvalues.push_back(norm[i].y);
+		nvalues.push_back(norm[i].z);
+	}
+
+	glGenVertexArrays(1, vao);
+	glBindVertexArray(vao[0]);
+	glGenBuffers(4, vboBooster);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboBooster[0]);
+	glBufferData(GL_ARRAY_BUFFER, pvalues.size() * 4, &pvalues[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboBooster[1]);
+	glBufferData(GL_ARRAY_BUFFER, tvalues.size() * 4, &tvalues[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboBooster[2]);
+	glBufferData(GL_ARRAY_BUFFER, nvalues.size() * 4, &nvalues[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboBooster[3]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, ind.size() * 4, &ind[0], GL_STATIC_DRAW);
+
+
+	///////////
+
+	///////////
+		//Lunch base SetUP
+	ind.clear();
+	vert.clear();
+	tex.clear();
+	norm.clear();
+
+	pvalues.clear();
+	tvalues.clear();
+	nvalues.clear();
+	ind = myLuncherBase.getIndices();
+	vert = myLuncherBase.getVertices();
+	tex = myLuncherBase.getTexCoords();
+	norm = myLuncherBase.getNormals();
+
+	for (int i = 0; i < myLuncherBase.getNumVertices(); i++) {
+		pvalues.push_back(vert[i].x);
+		pvalues.push_back(vert[i].y);
+		pvalues.push_back(vert[i].z);
+		tvalues.push_back(tex[i].s);
+		tvalues.push_back(tex[i].t);
+		nvalues.push_back(norm[i].x);
+		nvalues.push_back(norm[i].y);
+		nvalues.push_back(norm[i].z);
+	}
+
+	glGenVertexArrays(1, vao);
+	glBindVertexArray(vao[0]);
+	glGenBuffers(4, vboLuncherBase);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboLuncherBase[0]);
+	glBufferData(GL_ARRAY_BUFFER, pvalues.size() * 4, &pvalues[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboLuncherBase[1]);
+	glBufferData(GL_ARRAY_BUFFER, tvalues.size() * 4, &tvalues[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboLuncherBase[2]);
+	glBufferData(GL_ARRAY_BUFFER, nvalues.size() * 4, &nvalues[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboLuncherBase[3]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, ind.size() * 4, &ind[0], GL_STATIC_DRAW);
+
+
+	///////////
+
+	//Mid boosterSetUP
+	ind.clear();
+	vert.clear();
+	tex.clear();
+	norm.clear();
+
+	pvalues.clear();
+	tvalues.clear();
+	nvalues.clear();
+	ind = myMidBooster.getIndices();
+	vert = myMidBooster.getVertices();
+	tex = myMidBooster.getTexCoords();
+	norm = myMidBooster.getNormals();
+
+	for (int i = 0; i < myMidBooster.getNumVertices(); i++) {
+		pvalues.push_back(vert[i].x);
+		pvalues.push_back(vert[i].y);
+		pvalues.push_back(vert[i].z);
+		tvalues.push_back(tex[i].s);
+		tvalues.push_back(tex[i].t);
+		nvalues.push_back(norm[i].x);
+		nvalues.push_back(norm[i].y);
+		nvalues.push_back(norm[i].z);
+	}
+
+	glGenVertexArrays(1, vao);
+	glBindVertexArray(vao[0]);
+	glGenBuffers(4, vboMidBooster);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboMidBooster[0]);
+	glBufferData(GL_ARRAY_BUFFER, pvalues.size() * 4, &pvalues[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboMidBooster[1]);
+	glBufferData(GL_ARRAY_BUFFER, tvalues.size() * 4, &tvalues[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboMidBooster[2]);
+	glBufferData(GL_ARRAY_BUFFER, nvalues.size() * 4, &nvalues[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboMidBooster[3]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, ind.size() * 4, &ind[0], GL_STATIC_DRAW);
+
+
+	///////////
+	//wind boosterSetUP
+	ind.clear();
+	vert.clear();
+	tex.clear();
+	norm.clear();
+
+	pvalues.clear();
+	tvalues.clear();
+	nvalues.clear();
+	ind = myWindBooster.getIndices();
+	vert = myWindBooster.getVertices();
+	tex = myWindBooster.getTexCoords();
+	norm = myWindBooster.getNormals();
+
+	for (int i = 0; i < myWindBooster.getNumVertices(); i++) {
+		pvalues.push_back(vert[i].x);
+		pvalues.push_back(vert[i].y);
+		pvalues.push_back(vert[i].z);
+		tvalues.push_back(tex[i].s);
+		tvalues.push_back(tex[i].t);
+		nvalues.push_back(norm[i].x);
+		nvalues.push_back(norm[i].y);
+		nvalues.push_back(norm[i].z);
+	}
+
+	glGenVertexArrays(1, vao);
+	glBindVertexArray(vao[0]);
+	glGenBuffers(4, vboWindBooster);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboWindBooster[0]);
+	glBufferData(GL_ARRAY_BUFFER, pvalues.size() * 4, &pvalues[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboWindBooster[1]);
+	glBufferData(GL_ARRAY_BUFFER, tvalues.size() * 4, &tvalues[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboWindBooster[2]);
+	glBufferData(GL_ARRAY_BUFFER, nvalues.size() * 4, &nvalues[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboWindBooster[3]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, ind.size() * 4, &ind[0], GL_STATIC_DRAW);
+
+
+	///////////
+
+	//Mid wind boosterSetUP
+	ind.clear();
+	vert.clear();
+	tex.clear();
+	norm.clear();
+
+	pvalues.clear();
+	tvalues.clear();
+	nvalues.clear();
+	ind = myWindMidBooster.getIndices();
+	vert = myWindMidBooster.getVertices();
+	tex = myWindMidBooster.getTexCoords();
+	norm = myWindMidBooster.getNormals();
+
+	for (int i = 0; i < myWindMidBooster.getNumVertices(); i++) {
+		pvalues.push_back(vert[i].x);
+		pvalues.push_back(vert[i].y);
+		pvalues.push_back(vert[i].z);
+		tvalues.push_back(tex[i].s);
+		tvalues.push_back(tex[i].t);
+		nvalues.push_back(norm[i].x);
+		nvalues.push_back(norm[i].y);
+		nvalues.push_back(norm[i].z);
+	}
+
+	glGenVertexArrays(1, vao);
+	glBindVertexArray(vao[0]);
+	glGenBuffers(4, vboWindMidBooster);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboWindMidBooster[0]);
+	glBufferData(GL_ARRAY_BUFFER, pvalues.size() * 4, &pvalues[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboWindMidBooster[1]);
+	glBufferData(GL_ARRAY_BUFFER, tvalues.size() * 4, &tvalues[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboWindMidBooster[2]);
+	glBufferData(GL_ARRAY_BUFFER, nvalues.size() * 4, &nvalues[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboWindMidBooster[3]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, ind.size() * 4, &ind[0], GL_STATIC_DRAW);
+
+
+	///////////
+
+	//Capsule SetUP
+	ind.clear();
+	vert.clear();
+	tex.clear();
+	norm.clear();
+
+	pvalues.clear();
+	tvalues.clear();
+	nvalues.clear();
+	ind = myCapsule.getIndices();
+	vert = myCapsule.getVertices();
+	tex = myCapsule.getTexCoords();
+	norm = myCapsule.getNormals();
+
+	for (int i = 0; i < myCapsule.getNumVertices(); i++) {
+		pvalues.push_back(vert[i].x);
+		pvalues.push_back(vert[i].y);
+		pvalues.push_back(vert[i].z);
+		tvalues.push_back(tex[i].s);
+		tvalues.push_back(tex[i].t);
+		nvalues.push_back(norm[i].x);
+		nvalues.push_back(norm[i].y);
+		nvalues.push_back(norm[i].z);
+	}
+
+	glGenVertexArrays(1, vao);
+	glBindVertexArray(vao[0]);
+	glGenBuffers(4, vboCapsule);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboCapsule[0]);
+	glBufferData(GL_ARRAY_BUFFER, pvalues.size() * 4, &pvalues[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboCapsule[1]);
+	glBufferData(GL_ARRAY_BUFFER, tvalues.size() * 4, &tvalues[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboCapsule[2]);
+	glBufferData(GL_ARRAY_BUFFER, nvalues.size() * 4, &nvalues[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboCapsule[3]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, ind.size() * 4, &ind[0], GL_STATIC_DRAW);
+
+
+	///////////
+
+	//Capsule propelSetUP
+	ind.clear();
+	vert.clear();
+	tex.clear();
+	norm.clear();
+
+	pvalues.clear();
+	tvalues.clear();
+	nvalues.clear();
+	ind = myPropelCap.getIndices();
+	vert = myPropelCap.getVertices();
+	tex = myPropelCap.getTexCoords();
+	norm = myPropelCap.getNormals();
+
+	for (int i = 0; i < myPropelCap.getNumVertices(); i++) {
+		pvalues.push_back(vert[i].x);
+		pvalues.push_back(vert[i].y);
+		pvalues.push_back(vert[i].z);
+		tvalues.push_back(tex[i].s);
+		tvalues.push_back(tex[i].t);
+		nvalues.push_back(norm[i].x);
+		nvalues.push_back(norm[i].y);
+		nvalues.push_back(norm[i].z);
+	}
+
+	glGenVertexArrays(1, vao);
+	glBindVertexArray(vao[0]);
+	glGenBuffers(4, vboPropelCap);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboPropelCap[0]);
+	glBufferData(GL_ARRAY_BUFFER, pvalues.size() * 4, &pvalues[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboPropelCap[1]);
+	glBufferData(GL_ARRAY_BUFFER, tvalues.size() * 4, &tvalues[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboPropelCap[2]);
+	glBufferData(GL_ARRAY_BUFFER, nvalues.size() * 4, &nvalues[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboPropelCap[3]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, ind.size() * 4, &ind[0], GL_STATIC_DRAW);
+
+
+	///////////
+
+	////////////
+	//Cannon
 	//Barrel SetUP
 	ind.clear();
 	vert.clear();
@@ -956,69 +1341,45 @@ void setupVertices(void) {
 
 
 }
-//too shiny
-void installLights(glm::mat4 vMatrix) {
-	transformed = glm::vec3(vMatrix * glm::vec4(currentLightPos, 1.0));
-	lightPos[0] = transformed.x;
-	lightPos[1] = transformed.y;
-	lightPos[2] = transformed.z;
-
-	// get the locations of the light and material fields in the shader
-	globalAmbLoc = glGetUniformLocation(renderingProgram, "globalAmbient");
-	ambLoc = glGetUniformLocation(renderingProgram, "light.ambient");
-	diffLoc = glGetUniformLocation(renderingProgram, "light.diffuse");
-	specLoc = glGetUniformLocation(renderingProgram, "light.specular");
-	posLoc = glGetUniformLocation(renderingProgram, "light.position");
-	mambLoc = glGetUniformLocation(renderingProgram, "material.ambient");
-	mdiffLoc = glGetUniformLocation(renderingProgram, "material.diffuse");
-	mspecLoc = glGetUniformLocation(renderingProgram, "material.specular");
-	mshiLoc = glGetUniformLocation(renderingProgram, "material.shininess");
-
-	//  set the uniform light and material values in the shader
-	glProgramUniform4fv(renderingProgram, globalAmbLoc, 1, globalAmbient);
-	glProgramUniform4fv(renderingProgram, ambLoc, 1, lightAmbient);
-	glProgramUniform4fv(renderingProgram, diffLoc, 1, lightDiffuse);
-	glProgramUniform4fv(renderingProgram, specLoc, 1, lightSpecular);
-	glProgramUniform3fv(renderingProgram, posLoc, 1, lightPos);
-	//glProgramUniform4fv(renderingProgram, mambLoc, 1, matAmb);
-	//glProgramUniform4fv(renderingProgram, mdiffLoc, 1, matDif);
-	//glProgramUniform4fv(renderingProgram, mspecLoc, 1, matSpe);
-	//glProgramUniform1f(renderingProgram, mshiLoc, matShi);
-}
-void reStartLight() {
-
-	glProgramUniform4fv(renderingProgram, mambLoc, 1, matAmb);
-	glProgramUniform4fv(renderingProgram, mdiffLoc, 1, matDif);
-	glProgramUniform4fv(renderingProgram, mspecLoc, 1, matSpe);
-	glProgramUniform1f(renderingProgram, mshiLoc, matShi);
-}
-
 void init(GLFWwindow* window) {
-	  renderingProgramCubeMap = Utils::createShaderProgram("vertShaderOld.glsl", "fragShaderOld.glsl");
-	  renderingProgram = Utils::createShaderProgram("vertShaderL.glsl", "fragShaderL.glsl");
-	  renderingProgramPump = Utils::createShaderProgram("vertShaderExp.glsl", "fragShaderExp.glsl");
+	renderingProgramCubeMap = Utils::createShaderProgram("vertShaderOld.glsl", "fragShaderOld.glsl");
+	renderingProgram = Utils::createShaderProgram("vertShaderL.glsl", "fragShaderL.glsl");
+	renderingProgramPump = Utils::createShaderProgram("vertShaderExp.glsl", "fragShaderExp.glsl");
 	cameraX = 0.0f; cameraY = 0.0f; cameraZ = 12.0f;
 	torLocX = 0.0f; torLocY = 0.0f; torLocZ = -0.5f;
-	lastTime = 0;
+	lastTime = accumulator = Zview = 0;
+	Yview = -6;
 	glfwGetFramebufferSize(window, &width, &height);
 	aspect = (float)width / (float)height;
 	//pMat = glm::perspective(1.0472f, aspect, 0.1f, 1000.0f);
-	
+	//Rocket stuff
+	wideAngle = true;
+	rocketAngle = 0;
+	curve = 6;
+	curveValue = 0.008;
+	posRocket  = glm::vec3(0, 0, 0);
+	posBooster = glm::vec3(1.3,0,0);
+	posMidBooster = glm::vec3(1.3,1.45,0);
+	posCapsule = glm::vec3(1.3,1.96,0);
+	cannonPos =xBooster= xMidBooster = glm::vec3(0, 0, 0);
+		 xCapsule = glm::vec3(1, 0, 0);
+
+	//end Rocket
 	pMat = glm::mat4(
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, -1, 0,
 		0, 0, 0, 1
 	);
-	
+
 	vMat = glm::mat4(
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
 		0, 0, 0, 1
 	);
-	vMat = vMat * buildScala(0.6,0.6,0.6);
-	
+	vMat = vMat * buildScala(0.6, 0.6, 0.6);
+
 	//vMat = glm::translate(glm::mat4(1.0f), glm::vec3(-cameraX, -cameraY, -cameraZ));
 	mMat = glm::mat4(
 		1, 0, 0, 0,
@@ -1026,43 +1387,46 @@ void init(GLFWwindow* window) {
 		0, 0, 1, 0,
 		0, 0, 0, 1
 	);
-	 M = glm::mat4(
+	M = glm::mat4(
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
 		0, 0, 0, 1
 	);
-	 V2TzScalation= Lrot = elevation=azimuth=MA = MA1 = MA2 = glm::mat4(
+	V2TzScalation = Lrot = elevation = azimuth = MA = MA1 = MA2 = glm::mat4(
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
 		0, 0, 0, 1
 	);
-	yRot = xRot = zRot=wheelRot = glm::quat(0, 0, 0, 0);
-/*	MA = buildScala(0.5, 0.2, 0.2)*MA;
-	MA1 = MA1 * rotateZ(toRadians(90));
-	MA1 = buildScala(0.2, 0.5, 0.2)*MA1;
-	MA2 = MA2 * rotateY(toRadians(-90));
-	MA2 = buildScala(0.2, 0.2, 0.5)*MA2;*/
+	yRot = xRot = zRot = wheelRot = glm::quat(0, 0, 0, 0);
+	/*	MA = buildScala(0.5, 0.2, 0.2)*MA;
+		MA1 = MA1 * rotateZ(toRadians(90));
+		MA1 = buildScala(0.2, 0.5, 0.2)*MA1;
+		MA2 = MA2 * rotateY(toRadians(-90));
+		MA2 = buildScala(0.2, 0.2, 0.5)*MA2;*/
 	baseZ = 0.6;
-	baseYr  =Ax = Ay = Az = wR = trunnionR = screwR = 0;
+	baseYr =baseYr2= Ax = Ay = Az = wR = trunnionR = screwR = 0;
 	screwTx = buildTranslate(0, 0, 0);
-	V = glm::vec4(0,0,0,0);
+	V = glm::vec4(0, 0, 0, 0);
 	scaleV = 1.0;
-	scale = buildScala(scaleV,scaleV,scaleV);
+	scale = buildScala(scaleV, scaleV, scaleV);
 	setupVertices();
 	brickTexture = Utils::loadTexture("brick1.jpg");
 	arrowTexturey = Utils::loadTexture("brick2.jpg");
 	arrowTexturez = Utils::loadTexture("brick3.jpg");
 	arrowTexturex = Utils::loadTexture("brick4.jpg");
-	metalTexture = Utils::loadTexture("metal.jpg"); 
-	woodTexture = Utils::loadTexture("wood.jpg"); 
+	metalTexture = Utils::loadTexture("metal.jpg");
+	woodTexture = Utils::loadTexture("wood.jpg");
 	gemTexture = Utils::loadTexture("Gem.jpg");
 	woodNailTexture = Utils::loadTexture("woodNail.jpg");
 	innerArrowTexturex = Utils::loadTexture("innerArrow.jpg");
 	innerArrowTexturey = Utils::loadTexture("innerArrow2.jpg");
 	innerArrowTexturez = Utils::loadTexture("innerArrow3.jpg");
 	skyboxTexture = Utils::loadTexture("alien.jpg");
+	mainRocketTExt = Utils::loadTexture("p9XPM.jpg"); 
+	midRocketTExt = Utils::loadTexture("blackShot.jpg");
+	boosterText = Utils::loadTexture("BoosterText.jpg");
 	//skyboxTexture = Utils::loadCubeMap("cubeMap"); // expects a folder name
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	glEnable(GL_PRIMITIVE_RESTART);
@@ -1073,7 +1437,132 @@ void init(GLFWwindow* window) {
 	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
 }
+glm::vec3 unitVectorSpace(glm::vec3 v) {
+	return glm::normalize(v);
+}
+glm::vec3 trayectoriaOne(glm::vec3 objPos, int maxHeight, float deltaTime) {
+	/*xCapsule.y = log(xCapsule.x)*maxHeight;
+	xCapsule.x = xCapsule.x+deltaTime;
+	posCapsule = posCapsule + xCapsule;*/
+	if (posCapsule.y<6)
+	{
+		posCapsule.y += 0.008;
+		posBooster.y += 0.008;
+		posMidBooster.y += 0.008;
+	}
+	
+	if (posCapsule.y>=6 &&posCapsule.y<13)
+	{
+		camPos = posMidBooster;
+		posCapsule.y += 0.008;
+		//posBooster.y += 0.008;
+		posMidBooster.y += 0.008;
+		posCapsule.x += curveValue;
+		//posBooster.x += curveValue;
+		posMidBooster.x += curveValue;
+		rocketAngle -= 0.07;
+		Physics myFisicaRocket(1.0f, posBooster, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0));
+		myFisicaRocket.accelera(glm::vec3(0, 1, 0), -9.8);
+		myFisicaRocket.impulse(unitVectorSpace(posBooster), 1.2, dt);
+		myFisicaRocket.updatePhysics(dt, posBooster, xBooster);
+		//myFisica.collisionFloor(BallPos, dt, BallV, -0.003);
+		//myFisica.collisionBallsClones(sPhArray, sphNum);
+		cout << "x,y,z bosterrrr: " << posBooster.x << " , " << posBooster.y << " , " << posBooster.z << endl;
+		cout << " velozidad x,y,z : " << xBooster.x << " , " << xBooster.y << " , " << xBooster.z << endl;
+		cout << " velozidad sph: " << xBooster.length() << endl;
+		cout << " velozidad physics: " << myFisicaRocket.velocity.length() << endl;
+		cout << " accceleration : " << myFisicaRocket.acceleration.length() << endl;
+		cout << "paseed by physic" << endl;
+		if (posCapsule.y >= curve * 2)
+		{
+			curve = curve + 6;
+			curveValue -= 0.002;
 
+		}
+	}
+	if (posCapsule.y >= 13)
+	{
+		camPos = posCapsule;
+		posCapsule.y += 0.008;
+		//posBooster.y += 0.008;
+		//posMidBooster.y += 0.008;
+		posCapsule.x += curveValue;
+		//posBooster.x += curveValue;
+		//posMidBooster.x += curveValue;
+		rocketAngle -= 0.13;
+		Physics myFisicaRocket2(1.0f, posMidBooster, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0));
+		myFisicaRocket2.accelera(glm::vec3(0, 1, 0), -9.8);
+		myFisicaRocket2.impulse(unitVectorSpace(posMidBooster), 1.2, dt);
+		myFisicaRocket2.updatePhysics(dt, posMidBooster, xMidBooster);
+		//myFisica.collisionFloor(BallPos, dt, BallV, -0.003);
+		//myFisica.collisionBallsClones(sPhArray, sphNum);
+		cout << "x,y,z midBOSSSSTEOOO: " << posMidBooster.x << " , " << posMidBooster.y << " , " << posMidBooster.z << endl;
+		cout << " velozidad x,y,z : " << xMidBooster.x << " , " << xMidBooster.y << " , " << xMidBooster.z << endl;
+		cout << " velozidad sph: " << xMidBooster.length() << endl;
+		cout << " velozidad physics: " << myFisicaRocket2.velocity.length() << endl;
+		cout << " accceleration : " << myFisicaRocket2.acceleration.length() << endl;
+		cout << "paseed by physic" << endl;
+		if (posCapsule.y >= curve * 2)
+		{
+			curve = curve + 6;
+			curveValue -= 0.002;
+
+		}
+	}
+	if (posCapsule.y > 15)
+	{
+		if(posCapsule.y < 17)
+			posCapsule.y += 0.0008;
+		else
+			posCapsule.y += 0.000001;
+		
+		if (posCapsule.y >curve)
+		{
+			posCapsule.x += curveValue;
+			//posBooster.x += curveValue;
+			//posMidBooster.x += curveValue;
+			rocketAngle = -90;
+			if (posCapsule.y >= curve * 2)
+			{
+				curve = curve + 6;
+				curveValue -= 0.002;
+
+			}
+		}
+	}
+	objPos = posCapsule;
+	cout << "cApsule x , y : " << posCapsule.x << " , " << posCapsule.y << endl;
+	
+	return objPos;
+}
+void displayPArticleTest(GLFWwindow* window, double currentTime, float xTr, float yTr, float zTr, glm::mat4 &temp) {
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT);
+	reStartLight();
+	glUseProgram(renderingProgram);
+	mLoc = glGetUniformLocation(renderingProgram, "m_matrix");
+	mvLoc = glGetUniformLocation(renderingProgram, "mv_matrix");
+	projLoc = glGetUniformLocation(renderingProgram, "proj_matrix");
+	nLoc = glGetUniformLocation(renderingProgram, "norm_matrix");//
+
+	//MV
+	vMat *= buildTranslate(0, 0, 0) * glm::inverse(azimuth *elevation*scale);
+	mvStack.push(vMat);
+
+
+
+	mvStack.push(mvStack.top());
+	
+
+
+
+
+	mvStack.pop();
+
+
+
+}
 void display(GLFWwindow* window, double currentTime, float xTr, float yTr, float zTr, glm::mat4 &temp) {
 
 	
@@ -1090,8 +1579,623 @@ void display(GLFWwindow* window, double currentTime, float xTr, float yTr, float
 	//MV
 	vMat *= buildTranslate(0, 0, 0) * glm::inverse( azimuth *elevation*scale) ;
 	mvStack.push(vMat);
-	mvStack.push(mvStack.top());
+
 	
+	// Arrows
+	//X
+	//mvStack.push(mvStack.top());
+	mvStack.push(mvStack.top());
+	glUseProgram(renderingProgram);
+	mvStack.top() *= buildTranslate(0, 0, 0);
+	mvStack.push(mvStack.top());
+	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
+	glUniformMatrix4fv(nLoc, 1, GL_FALSE, glm::value_ptr(invTrMat));//Light new nloc
+	glBindBuffer(GL_ARRAY_BUFFER, vboArrow[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboArrow[1]);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	reStartLight();
+	glActiveTexture(GL_TEXTURE0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);//The wrapping function should go here not in init torus
+	glBindTexture(GL_TEXTURE_2D, arrowTexturex);
+
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CCW);
+	glPrimitiveRestartIndex(0xFFFF);
+	glEnable(GL_PRIMITIVE_RESTART);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboArrow[3]);
+	glDrawElements(GL_TRIANGLE_STRIP, myArrow.getIndices().size(), GL_UNSIGNED_INT, 0);
+	mvStack.pop();
+
+	//Y
+	/*mvStack.push(mvStack.top());
+	mvStack.top() *= buildTranslate(0, 0, 0);
+	mvStack.push(mvStack.top());
+	mvStack.top() *= rotateZ(toRadians(90));
+	*/
+	glUseProgram(renderingProgram);
+	mvStack.push(mvStack.top());
+	mvStack.top() *= buildTranslate(0, 0, 0) * rotateZ(toRadians(90));
+	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
+	glUniformMatrix4fv(nLoc, 1, GL_FALSE, glm::value_ptr(invTrMat));//Light new nloc
+	glBindBuffer(GL_ARRAY_BUFFER, vboArrow[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboArrow[1]);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	reStartLight();
+	glActiveTexture(GL_TEXTURE0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);//The wrapping function should go here not in init torus
+	glBindTexture(GL_TEXTURE_2D, arrowTexturey);
+
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CCW);
+	glPrimitiveRestartIndex(0xFFFF);
+	glEnable(GL_PRIMITIVE_RESTART);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboArrow[3]);
+	glDrawElements(GL_TRIANGLE_STRIP, myArrow.getIndices().size(), GL_UNSIGNED_INT, 0);
+	mvStack.pop();
+
+	//Z
+	/*mvStack.push(mvStack.top());
+	mvStack.top() *= buildTranslate(0, 0, 0);
+	mvStack.push(mvStack.top());
+	mvStack.top() *= rotateY(toRadians(-90));*/
+	glUseProgram(renderingProgram);
+	mvStack.push(mvStack.top());
+	mvStack.top() *= buildTranslate(0, 0, 0) * rotateY(toRadians(-90));
+	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
+	glUniformMatrix4fv(nLoc, 1, GL_FALSE, glm::value_ptr(invTrMat));//Light new nloc
+	glBindBuffer(GL_ARRAY_BUFFER, vboArrow[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboArrow[1]);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	reStartLight();
+	glActiveTexture(GL_TEXTURE0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);//The wrapping function should go here not in init torus
+	glBindTexture(GL_TEXTURE_2D, arrowTexturez);
+
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CCW);
+	glPrimitiveRestartIndex(0xFFFF);
+	glEnable(GL_PRIMITIVE_RESTART);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboArrow[3]);
+	glDrawElements(GL_TRIANGLE_STRIP, myArrow.getIndices().size(), GL_UNSIGNED_INT, 0);
+	mvStack.pop();
+
+
+	
+
+	//luncher base
+	//mvStack.push(mvStack.top
+	glUseProgram(renderingProgram);
+	mvStack.push(mvStack.top());
+	mvStack.top() *= buildTranslate(-0.3, -2.6, 0.0)*buildScala(0.5, 1, 0.5)*rotateZ(toRadians(90));
+	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
+	glUniformMatrix4fv(nLoc, 1, GL_FALSE, glm::value_ptr(invTrMat));//Light new nloc
+	glBindBuffer(GL_ARRAY_BUFFER, vboLuncherBase[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboLuncherBase[1]);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	reStartLight();
+	glActiveTexture(GL_TEXTURE0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);//The wrapping function should go here not in init torus
+	glBindTexture(GL_TEXTURE_2D, metalTexture);
+
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CCW);
+	glPrimitiveRestartIndex(0xFFFF);
+	glEnable(GL_PRIMITIVE_RESTART);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboLuncherBase[3]);
+	glDrawElements(GL_TRIANGLE_STRIP, myLuncherBase.getIndices().size(), GL_UNSIGNED_INT, 0);
+	mvStack.pop();
+
+
+	//Landing base
+	//mvStack.push(mvStack.top
+	glUseProgram(renderingProgram);
+	mvStack.push(mvStack.top());
+	mvStack.top() *= buildTranslate(1.3, -2.6, 0.0)*buildScala(0.5, 1, 0.5)*rotateZ(toRadians(90));
+	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
+	glUniformMatrix4fv(nLoc, 1, GL_FALSE, glm::value_ptr(invTrMat));//Light new nloc
+	glBindBuffer(GL_ARRAY_BUFFER, vboLuncherBase[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboLuncherBase[1]);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	reStartLight();
+	glActiveTexture(GL_TEXTURE0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);//The wrapping function should go here not in init torus
+	glBindTexture(GL_TEXTURE_2D, metalTexture);
+
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CCW);
+	glPrimitiveRestartIndex(0xFFFF);
+	glEnable(GL_PRIMITIVE_RESTART);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboLuncherBase[3]);
+	glDrawElements(GL_TRIANGLE_STRIP, myLuncherBase.getIndices().size(), GL_UNSIGNED_INT, 0);
+	mvStack.pop();
+
+	//MAinRocket
+	mvStack.push(mvStack.top());
+	mvStack.top() *= buildTranslate(0, 0, 0);
+
+	//MAinBooster
+	mvStack.push(mvStack.top());
+	mvStack.top() *= buildTranslate(posBooster.x, posBooster.y, posBooster.z)*rotateZ(toRadians(rocketAngle));
+	//Booster
+	//mvStack.push(mvStack.top
+	glUseProgram(renderingProgram);
+	mvStack.push(mvStack.top());
+	mvStack.top() *= buildTranslate(0.0, 0.0, 0.0)*buildScala(1, 3, 1)*rotateZ(toRadians(90));
+	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
+	glUniformMatrix4fv(nLoc, 1, GL_FALSE, glm::value_ptr(invTrMat));//Light new nloc
+	glBindBuffer(GL_ARRAY_BUFFER, vboMidBooster[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboMidBooster[1]);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	reStartLight();
+	glActiveTexture(GL_TEXTURE0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);//The wrapping function should go here not in init torus
+	glBindTexture(GL_TEXTURE_2D, mainRocketTExt);
+
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CCW);
+	glPrimitiveRestartIndex(0xFFFF);
+	glEnable(GL_PRIMITIVE_RESTART);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboMidBooster[3]);
+	glDrawElements(GL_TRIANGLE_STRIP, myMidBooster.getIndices().size(), GL_UNSIGNED_INT, 0);
+	mvStack.pop();
+
+	//WindBooster1
+	//mvStack.push(mvStack.top
+	glUseProgram(renderingProgram);
+	mvStack.push(mvStack.top());
+	mvStack.top() *= buildTranslate(0.2, 0.0, 0.0)*buildScala(1, 3, 1)*rotateZ(toRadians(90));
+	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
+	glUniformMatrix4fv(nLoc, 1, GL_FALSE, glm::value_ptr(invTrMat));//Light new nloc
+	glBindBuffer(GL_ARRAY_BUFFER, vboWindBooster[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboWindBooster[1]);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	reStartLight();
+	glActiveTexture(GL_TEXTURE0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);//The wrapping function should go here not in init torus
+	glBindTexture(GL_TEXTURE_2D, boosterText);
+
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CCW);
+	glPrimitiveRestartIndex(0xFFFF);
+	glEnable(GL_PRIMITIVE_RESTART);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboWindBooster[3]);
+	glDrawElements(GL_TRIANGLE_STRIP, myWindBooster.getIndices().size(), GL_UNSIGNED_INT, 0);
+	mvStack.pop();
+
+	//WindBooster2
+	//mvStack.push(mvStack.top
+	glUseProgram(renderingProgram);
+	mvStack.push(mvStack.top());
+	mvStack.top() *= buildTranslate(0.0, 0.0, 0.2)*buildScala(1, 3, 1)*rotateZ(toRadians(90));
+	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
+	glUniformMatrix4fv(nLoc, 1, GL_FALSE, glm::value_ptr(invTrMat));//Light new nloc
+	glBindBuffer(GL_ARRAY_BUFFER, vboWindBooster[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboWindBooster[1]);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	reStartLight();
+	glActiveTexture(GL_TEXTURE0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);//The wrapping function should go here not in init torus
+	glBindTexture(GL_TEXTURE_2D, boosterText);
+
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CCW);
+	glPrimitiveRestartIndex(0xFFFF);
+	glEnable(GL_PRIMITIVE_RESTART);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboWindBooster[3]);
+	glDrawElements(GL_TRIANGLE_STRIP, myWindBooster.getIndices().size(), GL_UNSIGNED_INT, 0);
+	mvStack.pop();
+
+	//WindBooster3
+	//mvStack.push(mvStack.top
+	glUseProgram(renderingProgram);
+	mvStack.push(mvStack.top());
+	mvStack.top() *= buildTranslate(0.0, 0.0, -0.2)*buildScala(1, 3, 1)*rotateZ(toRadians(90));
+	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
+	glUniformMatrix4fv(nLoc, 1, GL_FALSE, glm::value_ptr(invTrMat));//Light new nloc
+	glBindBuffer(GL_ARRAY_BUFFER, vboWindBooster[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboWindBooster[1]);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	reStartLight();
+	glActiveTexture(GL_TEXTURE0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);//The wrapping function should go here not in init torus
+	glBindTexture(GL_TEXTURE_2D, boosterText);
+
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CCW);
+	glPrimitiveRestartIndex(0xFFFF);
+	glEnable(GL_PRIMITIVE_RESTART);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboWindBooster[3]);
+	glDrawElements(GL_TRIANGLE_STRIP, myWindBooster.getIndices().size(), GL_UNSIGNED_INT, 0);
+	mvStack.pop();
+
+	//WindBooster4
+	//mvStack.push(mvStack.top
+	glUseProgram(renderingProgram);
+	mvStack.push(mvStack.top());
+	mvStack.top() *= buildTranslate(-0.2, 0.0, 0.0)*buildScala(1, 3, 1)*rotateZ(toRadians(90));
+	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
+	glUniformMatrix4fv(nLoc, 1, GL_FALSE, glm::value_ptr(invTrMat));//Light new nloc
+	glBindBuffer(GL_ARRAY_BUFFER, vboWindBooster[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboWindBooster[1]);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	reStartLight();
+	glActiveTexture(GL_TEXTURE0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);//The wrapping function should go here not in init torus
+	glBindTexture(GL_TEXTURE_2D, boosterText);
+
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CCW);
+	glPrimitiveRestartIndex(0xFFFF);
+	glEnable(GL_PRIMITIVE_RESTART);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboWindBooster[3]);
+	glDrawElements(GL_TRIANGLE_STRIP, myWindBooster.getIndices().size(), GL_UNSIGNED_INT, 0);
+	mvStack.pop();
+
+	//pop MAinBoster
+	mvStack.pop();
+
+	//mainMidBooster
+	mvStack.push(mvStack.top());
+	mvStack.top() *= buildTranslate(posMidBooster.x, posMidBooster.y, posMidBooster.z)*rotateZ(toRadians(rocketAngle));
+	//MidBooster
+	//mvStack.push(mvStack.top
+	glUseProgram(renderingProgram);
+	mvStack.push(mvStack.top());
+	mvStack.top() *= buildTranslate(0.0, 0.0, 0.0)*buildScala(1, 1, 1) *rotateZ(toRadians(90));
+	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
+	glUniformMatrix4fv(nLoc, 1, GL_FALSE, glm::value_ptr(invTrMat));//Light new nloc
+	glBindBuffer(GL_ARRAY_BUFFER, vboMidBooster[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboMidBooster[1]);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	reStartLight();
+	glActiveTexture(GL_TEXTURE0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);//The wrapping function should go here not in init torus
+	glBindTexture(GL_TEXTURE_2D, midRocketTExt);
+
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CCW);
+	glPrimitiveRestartIndex(0xFFFF);
+	glEnable(GL_PRIMITIVE_RESTART);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboMidBooster[3]);
+	glDrawElements(GL_TRIANGLE_STRIP, myMidBooster.getIndices().size(), GL_UNSIGNED_INT, 0);
+	mvStack.pop();
+
+	//WindMidBooster1
+	//mvStack.push(mvStack.top
+	glUseProgram(renderingProgram);
+	mvStack.push(mvStack.top());
+	mvStack.top() *= buildTranslate(0.0, 0.0, 0.2)*buildScala(1, 1, 1)*rotateZ(toRadians(90));
+	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
+	glUniformMatrix4fv(nLoc, 1, GL_FALSE, glm::value_ptr(invTrMat));//Light new nloc
+	glBindBuffer(GL_ARRAY_BUFFER, vboWindMidBooster[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboWindMidBooster[1]);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	reStartLight();
+	glActiveTexture(GL_TEXTURE0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);//The wrapping function should go here not in init torus
+	glBindTexture(GL_TEXTURE_2D, arrowTexturey);
+
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CCW);
+	glPrimitiveRestartIndex(0xFFFF);
+	glEnable(GL_PRIMITIVE_RESTART);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboWindMidBooster[3]);
+	glDrawElements(GL_TRIANGLE_STRIP, myWindMidBooster.getIndices().size(), GL_UNSIGNED_INT, 0);
+	mvStack.pop();
+
+	//WindMidBooster2
+	//mvStack.push(mvStack.top
+	glUseProgram(renderingProgram);
+	mvStack.push(mvStack.top());
+	mvStack.top() *= buildTranslate(0.0, 0.0, -0.2)*buildScala(1, 1, 1)*rotateZ(toRadians(90));
+	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
+	glUniformMatrix4fv(nLoc, 1, GL_FALSE, glm::value_ptr(invTrMat));//Light new nloc
+	glBindBuffer(GL_ARRAY_BUFFER, vboWindMidBooster[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboWindMidBooster[1]);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	reStartLight();
+	glActiveTexture(GL_TEXTURE0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);//The wrapping function should go here not in init torus
+	glBindTexture(GL_TEXTURE_2D, arrowTexturey);
+
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CCW);
+	glPrimitiveRestartIndex(0xFFFF);
+	glEnable(GL_PRIMITIVE_RESTART);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboWindMidBooster[3]);
+	glDrawElements(GL_TRIANGLE_STRIP, myWindMidBooster.getIndices().size(), GL_UNSIGNED_INT, 0);
+	mvStack.pop();
+
+	//WindMidBooster3
+	//mvStack.push(mvStack.top
+	glUseProgram(renderingProgram);
+	mvStack.push(mvStack.top());
+	mvStack.top() *= buildTranslate(0.2, 0.0, 0.0)*buildScala(1, 1, 1)*rotateZ(toRadians(90));
+	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
+	glUniformMatrix4fv(nLoc, 1, GL_FALSE, glm::value_ptr(invTrMat));//Light new nloc
+	glBindBuffer(GL_ARRAY_BUFFER, vboWindMidBooster[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboWindMidBooster[1]);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	reStartLight();
+	glActiveTexture(GL_TEXTURE0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);//The wrapping function should go here not in init torus
+	glBindTexture(GL_TEXTURE_2D, arrowTexturey);
+
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CCW);
+	glPrimitiveRestartIndex(0xFFFF);
+	glEnable(GL_PRIMITIVE_RESTART);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboWindMidBooster[3]);
+	glDrawElements(GL_TRIANGLE_STRIP, myWindMidBooster.getIndices().size(), GL_UNSIGNED_INT, 0);
+	mvStack.pop();
+
+	//WindMidBooster4
+	//mvStack.push(mvStack.top
+	glUseProgram(renderingProgram);
+	mvStack.push(mvStack.top());
+	mvStack.top() *= buildTranslate(-0.2, 0.0, 0.0)*buildScala(1, 1, 1)*rotateZ(toRadians(90));
+	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
+	glUniformMatrix4fv(nLoc, 1, GL_FALSE, glm::value_ptr(invTrMat));//Light new nloc
+	glBindBuffer(GL_ARRAY_BUFFER, vboWindMidBooster[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboWindMidBooster[1]);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	reStartLight();
+	glActiveTexture(GL_TEXTURE0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);//The wrapping function should go here not in init torus
+	glBindTexture(GL_TEXTURE_2D, arrowTexturey);
+
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CCW);
+	glPrimitiveRestartIndex(0xFFFF);
+	glEnable(GL_PRIMITIVE_RESTART);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboWindMidBooster[3]);
+	glDrawElements(GL_TRIANGLE_STRIP, myWindMidBooster.getIndices().size(), GL_UNSIGNED_INT, 0);
+	mvStack.pop();
+
+	//pop mainMidBooster
+	mvStack.pop();
+
+	//MainCApsule
+	mvStack.push(mvStack.top());
+	mvStack.top() *= buildTranslate(posCapsule.x, posCapsule.y, posCapsule.z)*rotateZ(toRadians(rocketAngle));
+
+	//Capsule
+	//mvStack.push(mvStack.top
+	glUseProgram(renderingProgram);
+	mvStack.push(mvStack.top());
+	mvStack.top() *= buildTranslate(0.0, 0.0, 0.0)*buildScala(1, 1, 1)*rotateZ(toRadians(90));
+	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
+	glUniformMatrix4fv(nLoc, 1, GL_FALSE, glm::value_ptr(invTrMat));//Light new nloc
+	glBindBuffer(GL_ARRAY_BUFFER, vboCapsule[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboCapsule[1]);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	reStartLight();
+	glActiveTexture(GL_TEXTURE0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);//The wrapping function should go here not in init torus
+	glBindTexture(GL_TEXTURE_2D, mainRocketTExt);
+
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CCW);
+	glPrimitiveRestartIndex(0xFFFF);
+	glEnable(GL_PRIMITIVE_RESTART);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboCapsule[3]);
+	glDrawElements(GL_TRIANGLE_STRIP, myCapsule.getIndices().size(), GL_UNSIGNED_INT, 0);
+	mvStack.pop();
+
+	//Capsule Propele
+	//mvStack.push(mvStack.top
+	glUseProgram(renderingProgram);
+	mvStack.push(mvStack.top());
+	mvStack.top() *= buildTranslate(0.0, -0.06, 0.0)*buildScala(1, 1, 1)*rotateZ(toRadians(90));
+	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
+	glUniformMatrix4fv(nLoc, 1, GL_FALSE, glm::value_ptr(invTrMat));//Light new nloc
+	glBindBuffer(GL_ARRAY_BUFFER, vboPropelCap[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboPropelCap[1]);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	reStartLight();
+	glActiveTexture(GL_TEXTURE0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);//The wrapping function should go here not in init torus
+	glBindTexture(GL_TEXTURE_2D, gemTexture);
+
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CCW);
+	glPrimitiveRestartIndex(0xFFFF);
+	glEnable(GL_PRIMITIVE_RESTART);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboPropelCap[3]);
+	glDrawElements(GL_TRIANGLE_STRIP, myPropelCap.getIndices().size(), GL_UNSIGNED_INT, 0);
+	mvStack.pop();
+
+	//Pop MainCApsule
+	mvStack.pop();
+
+	//pop mainRocket
+	mvStack.pop();
+
+	//SmalObj
+	glUseProgram(renderingProgramPump);
+	mvStack.push(mvStack.top());
+	mvStack.top() *= Lrot * buildTranslate(5, 2, 0)*buildScala(2, 2, 2);// *rotateY(toRadians(90));
+	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
+	glUniformMatrix4fv(nLoc, 1, GL_FALSE, glm::value_ptr(invTrMat));//Light new nloc
+	glBindBuffer(GL_ARRAY_BUFFER, vboSmallObj[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboSmallObj[1]);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	reStartLight();
+	glActiveTexture(GL_TEXTURE0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);//The wrapping function should go here not in init torus
+	glBindTexture(GL_TEXTURE_2D, gemTexture);
+
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CCW);
+	glPrimitiveRestartIndex(0xFFFF);
+	glEnable(GL_PRIMITIVE_RESTART);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboSmallObj[3]);
+	glDrawElements(GL_TRIANGLE_STRIP, mySmallObj.getIndices().size(), GL_UNSIGNED_INT, 0);
+	mvStack.pop();
+
+
+	//MainBooster
+
+	
+	//Light 
+
+	glUseProgram(renderingProgram);
+	currentLightPos = glm::vec3(lightLoc.x, lightLoc.y, lightLoc.z);
+	currentLightPos = glm::vec3(Lrot * glm::vec4(currentLightPos, 1.0f));
+	installLights(mvStack.top());
+	invTrMat = glm::transpose(glm::inverse(mvStack.top()));
+
+	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
+	glUniformMatrix4fv(nLoc, 1, GL_FALSE, glm::value_ptr(invTrMat));//Light new nloc
+
+	
+
+
+
+	
+
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+}
+void displayCannon(GLFWwindow* window, double currentTime, float xTr, float yTr, float zTr, glm::mat4 &temp) {
+
+
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT);
+	reStartLight();
+	glUseProgram(renderingProgram);
+	mLoc = glGetUniformLocation(renderingProgram, "m_matrix");
+	mvLoc = glGetUniformLocation(renderingProgram, "mv_matrix");
+	projLoc = glGetUniformLocation(renderingProgram, "proj_matrix");
+	nLoc = glGetUniformLocation(renderingProgram, "norm_matrix");//
+
+	//MV
+	vMat *= buildTranslate(0, 0, 0) * glm::inverse(azimuth *elevation*scale);
+	mvStack.push(vMat);
+	mvStack.push(mvStack.top());
+
 	// Arrows
 	//X
 	//mvStack.push(mvStack.top());
@@ -1343,6 +2447,8 @@ void display(GLFWwindow* window, double currentTime, float xTr, float yTr, float
 	glEnable(GL_PRIMITIVE_RESTART);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboSmallObj[3]);
 	glDrawElements(GL_TRIANGLE_STRIP, mySmallObj.getIndices().size(), GL_UNSIGNED_INT, 0);
+
+
 	//Light 
 
 	glUseProgram(renderingProgram);
@@ -1376,7 +2482,8 @@ void display(GLFWwindow* window, double currentTime, float xTr, float yTr, float
 	glUseProgram(renderingProgram);
 	temp = mvStack.top();
 	temp += ((glm::toMat4(xRot)*glm::toMat4(yRot)*glm::toMat4(zRot))*V);
-	mvStack.top() *= rotateZ(toRadians(baseYr)) *  buildTranslate(baseZ, 0, 0)* temp * ((glm::toMat4(xRot)*glm::toMat4(yRot)*glm::toMat4(zRot))*glm::toMat4(zRot)) * (glm::toMat4(yRot)*(glm::toMat4(xRot)*glm::toMat4(yRot)*glm::toMat4(zRot)));
+	mvStack.top() *= rotateZ(toRadians(baseYr))* buildTranslate(baseZ, 0, 0)* temp * ((glm::toMat4(xRot)*glm::toMat4(yRot)*glm::toMat4(zRot))*glm::toMat4(zRot)) * (glm::toMat4(yRot)*(glm::toMat4(xRot)*glm::toMat4(yRot)*glm::toMat4(zRot)))*rotateX(toRadians(baseYr2));
+	cannonPos = glm::vec3(mvStack.top()[3][0], mvStack.top()[3][1], mvStack.top()[3][2]);
 	mvStack.push(mvStack.top());
 
 	// Arrows BASE
@@ -1485,7 +2592,7 @@ void display(GLFWwindow* window, double currentTime, float xTr, float yTr, float
 	mvStack.top() *= buildTranslate(-0.5,0,-0.5);
 	*/
 	glUseProgram(renderingProgram);
-	mvStack.top() *= rotateY(toRadians(80)) * rotateZ(toRadians(-15)) * buildTranslate(-0.5, -0.5, -1) * buildScala(0.8,0.8,0.8);
+	mvStack.top() *= rotateY(toRadians(80)) * rotateZ(toRadians(-15)) * buildTranslate(-0.5, -0.5, -1) * buildScala(0.8, 0.8, 0.8);
 	mvStack.push(mvStack.top());
 
 	//Axle -- dont metter
@@ -1830,7 +2937,7 @@ void display(GLFWwindow* window, double currentTime, float xTr, float yTr, float
 	glBindBuffer(GL_ARRAY_BUFFER, vboTrunnion[1]);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(1);
-	
+
 	reStartLight();
 	glActiveTexture(GL_TEXTURE0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);//The wrapping function should go here not in init torus
@@ -1915,21 +3022,21 @@ void display(GLFWwindow* window, double currentTime, float xTr, float yTr, float
 	reStartLight();
 	if (shotFire)
 	{
-		mySphera[spheraN].lunchBall(mySphera,spheraN,mvStack, glm::vec3(mvStack.top()[3][0], mvStack.top()[3][1], mvStack.top()[3][2]), dt);
+		mySphera[spheraN].lunchBall(mySphera, spheraN, mvStack, glm::vec3(mvStack.top()[3][0], mvStack.top()[3][1], mvStack.top()[3][2]), dt);
 		cout << "Base --- x,y,z : " << mvStack.top()[3][0] << " , " << mvStack.top()[3][1] << " , " << mvStack.top()[3][2] << endl;
 		mySphera[spheraN].drawBall(mySphera[spheraN], vboSphere, vao, mvStack, gemTexture, pMat, invTrMat, mvLoc, projLoc, nLoc);
 		shotFire = false;
 		spheraN++;
 		cout << "sphera numeber: " << spheraN << endl;
 	}
-		for (int i = 0; i < spheraN; i++)
-		{
-			
-			mySphera[i].lunchBall(mySphera, spheraN, mvStack, mySphera[i].BallPos, dt);
-			mySphera[i].drawBall(mySphera[i], vboSphere, vao, mvStack, gemTexture, pMat, invTrMat, mvLoc, projLoc, nLoc);
-		}
+	for (int i = 0; i < spheraN; i++)
+	{
 
-	
+		mySphera[i].lunchBall(mySphera, spheraN, mvStack, mySphera[i].BallPos, dt);
+		mySphera[i].drawBall(mySphera[i], vboSphere, vao, mvStack, gemTexture, pMat, invTrMat, mvLoc, projLoc, nLoc);
+	}
+
+
 	mvStack.pop();
 	mvStack.pop();
 	mvStack.pop();
@@ -2048,7 +3155,7 @@ void display(GLFWwindow* window, double currentTime, float xTr, float yTr, float
 	//mvStack.top() = restart;
 	//mvStack.push(mvStack.top());
 
-	
+
 
 	//Sky simple
 	glUseProgram(renderingProgramCubeMap);
@@ -2082,8 +3189,8 @@ void display(GLFWwindow* window, double currentTime, float xTr, float yTr, float
 	mvStack.pop();
 	mvStack.top() = restart;//*buildScala(1,0.2,4);
 	mvStack.push(mvStack.top());
-	
-	
+
+
 
 
 
@@ -2099,6 +3206,39 @@ void display(GLFWwindow* window, double currentTime, float xTr, float yTr, float
 }
 
 
+//P MAtrix
+glm::mat4 FrustromMat4(float r, float l, float n, float f, float b, float t ) {
+	return glm::mat4(
+		(2*n/(r-l)), 0, 0, 0,
+		0, (2 * n / (t - b)), 0, 0,
+		((r+l)/(r-l)), ((t + b) / (t - b)), (-(f + n) / (f - n)), -1,
+		0, 0, (-2 * n / (f - n)), 0
+	);
+}
+void upDatePmat(stack <glm::mat4>  vMatemp, glm::vec3 obj,float x, float y, float z) {
+	glm::vec3 aye = glm::normalize(obj)+glm::vec3(x,y,z);
+	glm::mat4 look = glm::lookAt(aye, obj, glm::vec3(0, 1, 0));
+	pMat = glm::perspective(1.0472f, aspect, 0.1f, -1000.0f) * look ;
+}
+void upDatePmat2(stack <glm::mat4>  vMatemp, glm::vec3 obj, float x, float y, float z) {
+	glm::vec3 aye = glm::normalize(obj) + glm::vec3(x, y, z);
+	glm::mat4 look = glm::lookAt(glm::vec3(-1 * (vMatemp.top()[3][0] + x), 1 * (vMatemp.top()[3][1] + y), -1 * (vMatemp.top()[3][2]) + z), obj, glm::vec3(0, 1, 0));// *rotateY(toRadians(180))*rotateX(toRadians(45));
+		pMat = glm::perspective(1.0472f, aspect, 0.1f, -1000.0f) * look * V2TzScalation ;
+
+
+
+
+}
+void upDatePmatWide(stack <glm::mat4>  vMatemp, glm::vec3 obj, float x, float y, float z) {
+	glm::vec3 aye = glm::normalize(cannonPos) + glm::vec3(x, y, z);
+	glm::mat4 look = glm::lookAt(glm::vec3(-1 * (vMatemp.top()[3][0] + x), 1 * (vMatemp.top()[3][1] + y), -1 * (vMatemp.top()[3][2]) + z), cannonPos, glm::vec3(0, 1, 0));// *rotateY(toRadians(180))*rotateX(toRadians(45));
+	pMat = glm::perspective(1.0472f, aspect, 0.1f, -1000.0f) * look * V2TzScalation;
+
+
+
+
+}
+//keys
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	glm::mat4 Mtemp = glm::mat4(
@@ -2107,7 +3247,19 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		0, 0, 1, 0,
 		0, 0, 0, 1
 	);
-	
+	if (key == GLFW_KEY_M && action == GLFW_PRESS) {
+
+		if (scene)
+		{
+			scene = false;
+		}
+		else
+		{
+			scene = true;
+		}
+
+	}
+
 	if (key == GLFW_KEY_B && action == GLFW_PRESS) {
 
 		V2TzScalation *= buildTranslate(0, 0, 0.1);
@@ -2174,7 +3326,30 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_V && action == GLFW_PRESS)
 	{
 		V1toV2View = false;
+		Zview = 8;
 	}
+	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+	{
+		V1toV2View = false;
+		Zview = 15;
+	}
+	if (key == GLFW_KEY_LEFT_ALT && action == GLFW_PRESS)
+	{
+		V1toV2View = false;
+		Zview = 3;
+	}
+	if (key == GLFW_KEY_RIGHT_ALT && action == GLFW_PRESS)
+	{
+		if (wideAngle)
+		{
+			wideAngle = false;
+		}
+		else {
+			wideAngle = true;
+		}
+		
+	}
+
 	if (key == GLFW_KEY_I && action == GLFW_PRESS) {
 
 		renderingProgramCubeMap = Utils::createShaderProgram("vertShaderOld.glsl", "fragShaderOld.glsl");
@@ -2190,11 +3365,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		reStartLight();
 	}
 	if (key == GLFW_KEY_U && action == GLFW_PRESS) {
-		
-			renderingProgramCubeMap = Utils::createShaderProgram("vertShaderOld.glsl", "fragShaderOld.glsl");
-			renderingProgram = Utils::createShaderProgram("vertShaderL.glsl", "fragShaderL.glsl");
-			renderingProgramPump = Utils::createShaderProgram("vertShaderExp.glsl", "fragShaderExp.glsl");
-			reStartLight();
+
+		renderingProgramCubeMap = Utils::createShaderProgram("vertShaderOld.glsl", "fragShaderOld.glsl");
+		renderingProgram = Utils::createShaderProgram("vertShaderL.glsl", "fragShaderL.glsl");
+		renderingProgramPump = Utils::createShaderProgram("vertShaderExp.glsl", "fragShaderExp.glsl");
+		reStartLight();
 
 	}
 	if (key == GLFW_KEY_J && action == GLFW_PRESS)
@@ -2205,14 +3380,14 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		reStartLight();
 	}
 	if (key == GLFW_KEY_T && action == GLFW_PRESS) {
-		Lrot *= rotateZ(toRadians(10));
-		
+		Lrot *= rotateY(toRadians(10));
+
 
 
 	}
 	if (key == GLFW_KEY_Y && action == GLFW_PRESS) {
-		Lrot *= rotateZ(toRadians(-10));
-		
+		Lrot *= rotateY(toRadians(-10));
+
 	}
 	if (key == GLFW_KEY_G && action == GLFW_PRESS) {
 		Lrot *= rotateX(toRadians(10));
@@ -2262,7 +3437,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		wheelRot = glm::quat(cosf(toRadians(Ay) / 2), sinf(toRadians(wR) / 2), 0, 0);
 	}
 	if (key == GLFW_KEY_E && action == GLFW_PRESS) {
-		
+
 	}
 	if (key == GLFW_KEY_R && action == GLFW_PRESS) {
 		if (action == GLFW_PRESS)
@@ -2278,10 +3453,13 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			scaleV -= 0.01;
 			scale = buildScala(scaleV, scaleV, scaleV);
 		}
-		
+
 
 	}
 	if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
+		//particles
+
+
 		//V += glm::vec4(0,0.1,0,0);
 		wR += 30;
 		wheelRot = glm::quat(cosf(toRadians(Ay) / 2), sinf(toRadians(wR) / 2), 0, 0);
@@ -2291,6 +3469,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 	}
 	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
+
+		//particles
+
+
 		//V -= glm::vec4(0, 0.1, 0, 0);
 		wR -= 30;
 		wheelRot = glm::quat(cosf(toRadians(Ay) / 2), sinf(toRadians(wR) / 2), 0, 0);
@@ -2299,10 +3481,12 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
 		//V -= glm::vec4(0.1, 0, 0, 0);
 		baseYr += 3;
+		baseYr2 += 0.3;
 	}
 	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
 		//V += glm::vec4(0.1, 0, 0, 0);
 		baseYr -= 3;
+		baseYr2 -= 0.3;
 
 	}
 	if (key == GLFW_KEY_L && action == GLFW_PRESS) {
@@ -2313,46 +3497,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 
 }
-
-
-
-
-
-
-//P MAtrix
-glm::mat4 FrustromMat4(float r, float l, float n, float f, float b, float t ) {
-	return glm::mat4(
-		(2*n/(r-l)), 0, 0, 0,
-		0, (2 * n / (t - b)), 0, 0,
-		((r+l)/(r-l)), ((t + b) / (t - b)), (-(f + n) / (f - n)), -1,
-		0, 0, (-2 * n / (f - n)), 0
-	);
-}
-void upDatePmat(stack <glm::mat4>  vMatemp) {
-	glm::mat4 look = glm::lookAt(glm::vec3(-1 * (vMatemp.top()[3][0] + 0.3f), 1 * (vMatemp.top()[3][1] + 0.4f), -1 * (vMatemp.top()[3][2]) + 0.9f), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-	pMat = FrustromMat4(0.6, -0.6, 0.2, 25, -0.6, 0.6) * look ;
-
-}
-void upDatePmat2(stack <glm::mat4>  vMatemp) {
-
-		glm::mat4 look = glm::lookAt(glm::vec3(-1 * (vMatemp.top()[3][0] + 0.3f), 1 * (vMatemp.top()[3][1] + 0.4f), -1 * (vMatemp.top()[3][2]) + 0.9f), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-		pMat = FrustromMat4(0.6, -0.6, 2, 25, -0.6, 0.6) * look * V2TzScalation ;
-
-
-
-
-}
 void window_size_callback(GLFWwindow* win, int newWidth, int newHeight) {
 	aspect = (float)newWidth / (float)newHeight;
 	glViewport(0, 0, newWidth, newHeight);
-	if (V1toV2View)
-	{
-		upDatePmat(mvStack);
-	}
-	else
-	{
-		upDatePmat2(mvStack);
-	}
+
 	/*pMat = glm::mat4(
 		1, 0, 0, 0,
 		0, 1, 0, 0,
@@ -2396,24 +3544,72 @@ int main(void) {
 	//display(window, glfwGetTime(), Ax, Ay, Az, temp);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetCursorPosCallback(window, mouse_movement_callback);
+	double t = 0.0;
+	const double dtStatic = 0.09;
 
+	double currentTimeGeneral = glfwGetTime();
+
+	
 	while (!glfwWindowShouldClose(window)) {
 		currentTime = glfwGetTime();
 		dt = currentTime - lastTime;
 		lastTime = currentTime;
 		mvMat = mMat * vMat;
 		glfwSwapBuffers(window);
-		display(window, glfwGetTime(), Ax, Ay, Az, temp);
+		
+		
+		//display(window, glfwGetTime(), Ax, Ay, Az, temp);
+		//displayPArticleTest(window, glfwGetTime(), Ax, Ay, Az, temp);
 		glfwSetKeyCallback(window, key_callback);
-		glfwWaitEvents();
-		if (V1toV2View)
+		if (scene)
 		{
-			upDatePmat(mvStack);
+			displayCannon(window, glfwGetTime(), Ax, Ay, Az, temp);
+			glfwWaitEvents();
+			if (V1toV2View)
+			{
+				upDatePmat(mvStack, cannonPos,1, 0.6, 2);
+			}
+			else
+			{
+				upDatePmat2(mvStack,cannonPos, -0.08, 0.1, -0.3);
+			}
+			camPos = cannonPos;
 		}
 		else
 		{
-			upDatePmat2(mvStack);
+			double newTime = glfwGetTime();
+			double frameTime = newTime - currentTimeGeneral;
+			currentTimeGeneral = newTime;
+
+			accumulator += frameTime;
+
+			/*while (accumulator >= dtStatic)
+			{
+				trayectoriaOne(posCapsule, 10, 0.1);
+				accumulator -= dtStatic;
+				t += dtStatic;
+			}*/
+			trayectoriaOne(posCapsule, 10, 0.1);
+			display(window, glfwGetTime(), Ax, Ay, Az, temp);
+			glfwWaitEvents();
+			if (wideAngle)
+			{
+				if (V1toV2View)
+				{
+					upDatePmat(mvStack, camPos, 1, 3, 7);
+				}
+				else
+				{
+					upDatePmat2(mvStack, camPos, -9, Yview, Zview);
+				}
+			}
+			else
+			{
+				upDatePmat2(mvStack, glm::normalize(camPos)+glm::vec3(1,3,1), -9, 1, 17);
+			}
 		}
+
+		
 		
 	}
 

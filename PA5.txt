@@ -1,0 +1,56 @@
+Name and CLID: Roberto Salazar C00416436
+Assignment: assignement 5
+Specify CMPS 415 or CSCE 515: 515
+--
+
+Here is a git link just in case: https://github.com/sroberto27/PhysicsCannon
+
+
+Has anyone helped you with this assignment:  No
+If yes, identify them and describe the level of help:N/A
+
+Did you help anyone else with this assignment: No
+If yes, identify them and describe the level of help:N/A
+
+Have you incorporated anything from outside sources (web sites, books, previous semesters, etc?):  No
+If yes, specify the source and level of similarity: N/A
+
+(NOTE: There will be a point reduction if you exceed standards of “Academic Integrity” stated in the syllabus. But, if described accurately above, there will be no further disciplinary action.)
+--
+Compiler: Visual Studio 2017
+Operating System:Windows 10
+List versions used for GLFW, GLEW, and GLM, if different than requested versions: None
+List any other nonstandard libraries used: None
+(NOTE: Your submission must work on a supported configuration.)
+--
+If compiling requires anything beyond typing "make" or selecting "build", detail it below: N/A
+
+If the program supports any interaction, options, or parameters, give details below: 
+
+Scale: To scale, use  R(+) and F(-). The current scale has a bug that when R o F is pressed, it keeps taking mouse movement to scale I could not fix it.
+so when you press R to zoom out move abit the mouse once you reach the zoom needed press F to stop. It is the same for Zoom in.
+
+Move camera: Press the left click and move the mouse. Release the left click, and it stops.
+
+Local left/right-movement cannon keys <- and ->
+Local front/back-movement cannon keys ^ and v
+Based Local/Z-rotazione: use keys Z(+) and X(-)
+Rotation around axes Y: use keys A(+) and S(-)
+Wheel rotation: Q and W
+trunnion till: E and D
+Light rotation up/down : use keys G and H
+light rotation left/right: use keys T and Y 
+light on/off: let pressed keys U or J
+on off Texture/ Color let pressed Keys I or K
+V1 view key C
+v2 view Key v
+Zoom in V2 view B(in) and N(out)
+Shot ball P 
+
+NOTES for the GRADER:
+1.- the skybox still seen to be off set. 
+2.- For the Physics I implemented most of the code on Physics.cpp, Physics.h, Ball.cpp, Ball.h, and main.cpp
+2.1.- Due to the my poor implementation of the stack structure of the cannon (Scene Graph is disorganized and pretty off)
+I was no able to properly implement physic fetures or properly test them.
+3.- new Pmat is implemented, but it still wrong from my point of view.
+4.- Thanks.
