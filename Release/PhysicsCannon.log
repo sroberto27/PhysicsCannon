@@ -1,6 +1,113 @@
-﻿soil2-debug.lib(SOIL2.obj) : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:ICF' specification
+﻿  main.cpp
+c:\users\roberto\source\repos\physicscannon\physicscannon\frustrumconne.h(23): warning C4091: 'static ': ignored on left of 'FrustumConne::<unnamed-enum-OUTSIDE>' when no variable is declared
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(147): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(237): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(238): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(242): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(243): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1359): warning C4305: '=': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1381): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1408): warning C4305: '=': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1449): warning C4305: '+=': truncation from 'double' to 'T'
+          with
+          [
+              T=float
+          ]
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1450): warning C4305: '+=': truncation from 'double' to 'T'
+          with
+          [
+              T=float
+          ]
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1451): warning C4305: '+=': truncation from 'double' to 'T'
+          with
+          [
+              T=float
+          ]
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1457): warning C4305: '+=': truncation from 'double' to 'T'
+          with
+          [
+              T=float
+          ]
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1459): warning C4305: '+=': truncation from 'double' to 'T'
+          with
+          [
+              T=float
+          ]
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1463): warning C4305: '-=': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1465): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1466): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1479): warning C4305: '-=': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1486): warning C4305: '+=': truncation from 'double' to 'T'
+          with
+          [
+              T=float
+          ]
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1492): warning C4305: '-=': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1494): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1495): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1508): warning C4305: '-=': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1515): warning C4305: '+=': truncation from 'double' to 'T'
+          with
+          [
+              T=float
+          ]
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1517): warning C4305: '+=': truncation from 'double' to 'T'
+          with
+          [
+              T=float
+          ]
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1528): warning C4305: '-=': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1687): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1717): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1782): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1811): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1840): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1869): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1933): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1962): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(1991): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2020): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2085): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2299): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2331): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2426): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2493): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2528): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2562): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2595): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2630): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2662): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2698): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2698): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2770): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2806): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2806): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2859): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2927): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(2963): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(3051): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(3090): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(3134): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(3265): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(3320): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(3424): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(3429): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(3445): warning C4305: '+=': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(3453): warning C4305: '-=': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(3466): warning C4305: '+=': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(3479): warning C4305: '-=': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(3484): warning C4305: '+=': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(3489): warning C4305: '-=': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(3554): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(3570): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(3574): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(3584): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\roberto\source\repos\physicscannon\physicscannon\main.cpp(3592): warning C4305: 'argument': truncation from 'double' to 'float'
+soil2-debug.lib(SOIL2.obj) : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:ICF' specification
 LINK : warning LNK4098: defaultlib 'MSVCRTD' conflicts with use of other libs; use /NODEFAULTLIB:library
   Generating code
-  All 1062 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  0 of 1062 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    3 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   PhysicsCannon.vcxproj -> C:\Users\Roberto\source\repos\PhysicsCannon\Release\PhysicsCannon.exe
